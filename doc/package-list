@@ -1,0 +1,11 @@
+fr.upmc.datacenter.controller
+fr.upmc.datacenter.controller.Factory
+fr.upmc.datacenter.controller.connectors
+fr.upmc.datacenter.controller.interfaces
+fr.upmc.datacenter.controller.ports
+fr.upmc.datacenter.dispatcher
+fr.upmc.datacenter.dispatcher.connectors
+fr.upmc.datacenter.dispatcher.interfaces
+fr.upmc.datacenter.dispatcher.ports
+fr.upmc.tests
+fr.upmc.tests.multijvm

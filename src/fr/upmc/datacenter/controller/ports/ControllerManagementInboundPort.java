@@ -5,7 +5,15 @@ import fr.upmc.components.ports.AbstractInboundPort;
 import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
-
+/**
+ * The class <code>ControllerManagementInboundPort</code>
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ * 
+ * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @version	$Name$ -- $Revision$ -- $Date$
+ */
 public class ControllerManagementInboundPort
 	extends		AbstractInboundPort implements ControllerManagementI
 	{
@@ -29,7 +37,9 @@ public class ControllerManagementInboundPort
 
 			assert	owner != null && owner instanceof Controller ;
 		}
-
+		/**
+		 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
+		 */
 		@Override
 		public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
 			final Controller c = (Controller) this.owner;
