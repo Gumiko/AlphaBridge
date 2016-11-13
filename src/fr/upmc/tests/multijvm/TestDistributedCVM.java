@@ -16,12 +16,14 @@ import fr.upmc.components.examples.smoothing.filter.Filter;
 import fr.upmc.components.examples.smoothing.gauge.Gauge;
 import fr.upmc.components.examples.smoothing.sensor.SensorSimulator;
 import fr.upmc.components.ports.PortI;
+import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.controller.connectors.ApplicationRequestConnector;
 import fr.upmc.datacenter.controller.connectors.ControllerManagementConnector;
 import fr.upmc.datacenter.controller.ports.ApplicationRequestOutboundPort;
 import fr.upmc.datacenter.controller.ports.ControllerManagementOutboundPort;
 import fr.upmc.datacenter.hardware.computers.Computer;
+import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerStaticStateDataOutboundPort;
@@ -36,43 +38,48 @@ import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagemen
 public class TestDistributedCVM 
 extends		AbstractDistributedCVM
 {
+	/* JVM URI */
 	public final static String CONTROLLER_JVMURI = "controller";
 	public final static String COMPUTER_JVMURI = "computer";
 
+	/* RG 1 */
 	public static final String	RequestSubmissionInboundPortURI = "rsibp" ;
 	public static final String	RequestSubmissionOutboundPortURI = "rsobp" ;
-
-	public static final String	RequestSubmissionInboundPortURI2 = "rsibp2" ;
-	public static final String	RequestSubmissionOutboundPortURI2 = "rsobp2" ;
 
 	public static final String	RequestNotificationInboundPortURI = "rnibp" ;
 	public static final String	RequestNotificationOutboundPortURI = "rnobp" ;
 
-	public static final String	RequestNotificationInboundPortURI2 = "rnibp2" ;
-	public static final String	RequestNotificationOutboundPortURI2 = "rnobp2" ;
-
 	public static final String	RequestGeneratorManagementInboundPortURI = "rgmip" ;
 	public static final String	RequestGeneratorManagementOutboundPortURI = "rgmop" ;
+	
+	/*RG 2*/
+	
+	public static final String	RequestSubmissionInboundPortURI2 = "rsibp2" ;
+	public static final String	RequestSubmissionOutboundPortURI2 = "rsobp2" ;
+	
+	public static final String	RequestNotificationInboundPortURI2 = "rnibp2" ;
+	public static final String	RequestNotificationOutboundPortURI2 = "rnobp2" ;
 
 	public static final String	RequestGeneratorManagementInboundPortURI2 = "rgmip2" ;
 	public static final String	RequestGeneratorManagementOutboundPortURI2 = "rgmop2" ;
 
+	/*Computer*/
 	public static final String	ComputerServicesInboundPortURI = "cs-ibp" ;
 	public static final String	ComputerServicesOutboundPortURI = "cs-obp" ;
 	public static final String	ComputerStaticStateDataInboundPortURI = "css-dip" ;
 	public static final String	ComputerStaticStateDataOutboundPortURI = "css-dop" ;
 	public static final String	ComputerDynamicStateDataInboundPortURI = "cds-dip" ;
 	public static final String	ComputerDynamicStateDataOutboundPortURI = "cds-dop" ;
+	
+	/*Controller*/
 	private static final String ApplicationRequestOutboundPortURI = "ar-op";
 	private static final String ApplicationRequestInboundPortURI = "ar-ip";
-
 	private static final String ControllerManagementOutboundPortURI = "cm-op";
 	private static final String ControllerManagementInboundPortURI = "cm-ip";
 
 	protected Controller controller;
 	protected Computer computer;
 	protected ComputerMonitor computermonitor;
-
 	protected RequestGenerator rg1;
 	protected RequestGenerator rg2;
 
@@ -123,9 +130,31 @@ extends		AbstractDistributedCVM
 		 * 
 		 */
 		if(thisJVMURI.equals(CONTROLLER_JVMURI)){
+			/*Controller*/
 			controller= new Controller("controller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
 			this.deployedComponents.add(controller);
 
+			this.rgmop = new RequestGeneratorManagementOutboundPort(
+					RequestGeneratorManagementOutboundPortURI,
+					new AbstractComponent() {}) ;
+			this.rgmop.publishPort() ;
+			
+			this.rgmop2 = new RequestGeneratorManagementOutboundPort(
+					RequestGeneratorManagementOutboundPortURI2,
+					new AbstractComponent() {}) ;
+			this.rgmop2.publishPort() ;
+			
+			this.arop = new ApplicationRequestOutboundPort(
+					ApplicationRequestOutboundPortURI,
+					controller) ;
+			this.arop.publishPort() ;
+			
+			this.cmop = new ControllerManagementOutboundPort(
+					ControllerManagementOutboundPortURI,
+					controller) ;
+			this.cmop.publishPort() ;
+			/* RG 1 */
+			
 			rg1 =
 					new RequestGenerator(
 							"rg1",			// generator component URI
@@ -135,7 +164,22 @@ extends		AbstractDistributedCVM
 							RequestSubmissionOutboundPortURI,
 							RequestNotificationInboundPortURI) ;
 			this.deployedComponents.add(rg1) ;
+			
+			
+			rg_rsop=(RequestSubmissionOutboundPort) rg1.findPortFromURI(RequestSubmissionOutboundPortURI);
+			rg_rnip=(RequestNotificationInboundPort) rg1.findPortFromURI(RequestNotificationInboundPortURI);
 
+//			this.rg_rsop=new RequestSubmissionOutboundPort(rg1);
+//			this.rg_rnip=new RequestNotificationInboundPort(rg1);
+//			
+//			rg1.addPort(rg_rsop);
+//			rg1.addPort(rg_rnip);
+//			
+//			this.rg_rsop.publishPort();
+//			this.rg_rnip.publishPort();
+			
+		
+			/* RG 2 */
 			rg2 =
 					new RequestGenerator(
 							"rg2",			// generator component URI
@@ -145,7 +189,27 @@ extends		AbstractDistributedCVM
 							RequestSubmissionOutboundPortURI2,
 							RequestNotificationInboundPortURI2) ;
 			this.deployedComponents.add(rg2) ;
+			
+			
+			rg_rsop2=(RequestSubmissionOutboundPort) rg2.findPortFromURI(RequestSubmissionOutboundPortURI2);
+			rg_rnip2=(RequestNotificationInboundPort) rg2.findPortFromURI(RequestNotificationInboundPortURI2);
 
+//			this.rg_rsop2=new RequestSubmissionOutboundPort(rg2);
+//			this.rg_rnip2=new RequestNotificationInboundPort(rg2);
+//			
+//			rg2.addPort(rg_rsop2);
+//			rg2.addPort(rg_rnip2);
+//						
+//			this.rg_rsop2.publishPort();
+//			this.rg_rnip2.publishPort();
+
+			rg1.toggleLogging();
+			rg1.toggleTracing();
+			rg2.toggleLogging();
+			rg2.toggleTracing();
+			controller.toggleLogging();
+			controller.toggleTracing();
+			
 		}else if(thisJVMURI.equals(COMPUTER_JVMURI)){
 			String computerURI = "computer0" ;
 			int numberOfProcessors = 2 ;
@@ -176,16 +240,22 @@ extends		AbstractDistributedCVM
 							ComputerStaticStateDataOutboundPortURI,
 							ComputerDynamicStateDataOutboundPortURI) ;
 			this.deployedComponents.add(computermonitor);
+			
+			this.cssPort =
+					(ComputerStaticStateDataOutboundPort)
+					computermonitor.findPortFromURI(ComputerStaticStateDataOutboundPortURI) ;
+			
+	
+
+			this.cdsPort =
+					(ComputerDynamicStateDataOutboundPort)
+					computermonitor.findPortFromURI(ComputerDynamicStateDataOutboundPortURI) ;
+			
+			
 		}else {
 			System.out.println("Error, wrong JVM URI: " + thisJVMURI) ;
 			System.exit(1) ;
 		}
-		rg1.toggleLogging();
-		rg1.toggleTracing();
-		rg2.toggleLogging();
-		rg2.toggleTracing();
-		controller.toggleLogging();
-		controller.toggleTracing();
 		super.instantiateAndPublish();
 	}
 
@@ -206,53 +276,45 @@ extends		AbstractDistributedCVM
 		assert	this.instantiationAndPublicationDone ;
 
 		if (thisJVMURI.equals(CONTROLLER_JVMURI)) {
-			/*Request Generator 1*/
-			this.rgmop = new RequestGeneratorManagementOutboundPort(
-					RequestGeneratorManagementOutboundPortURI,
-					new AbstractComponent() {}) ;
-			this.rgmop.publishPort() ;
-			this.rgmop.doConnection(
-					RequestGeneratorManagementInboundPortURI,
-					RequestGeneratorManagementConnector.class.getCanonicalName()) ;
-
-			rg_rsop=(RequestSubmissionOutboundPort) rg1.findPortFromURI(RequestSubmissionOutboundPortURI);
-			rg_rnip=(RequestNotificationInboundPort) rg1.findPortFromURI(RequestNotificationInboundPortURI);
-
-			/*Request Generator 2*/
-			this.rgmop2 = new RequestGeneratorManagementOutboundPort(
-					RequestGeneratorManagementOutboundPortURI2,
-					new AbstractComponent() {}) ;
-			this.rgmop2.publishPort() ;
-			this.rgmop2.doConnection(
-					RequestGeneratorManagementInboundPortURI2,
-					RequestGeneratorManagementConnector.class.getCanonicalName()) ;
-
-			rg_rsop2=(RequestSubmissionOutboundPort) rg2.findPortFromURI(RequestSubmissionOutboundPortURI2);
-			rg_rnip2=(RequestNotificationInboundPort) rg2.findPortFromURI(RequestNotificationInboundPortURI2);
-
+			
 			/*Controller Application Submit Port */
 			/*Application submit port */
-			this.arop = new ApplicationRequestOutboundPort(
-					ApplicationRequestOutboundPortURI,
-					new AbstractComponent() {}) ;
-			this.arop.publishPort() ;
+			
 			this.arop.doConnection(
 					ApplicationRequestInboundPortURI,
 					ApplicationRequestConnector.class.getCanonicalName()) ;
 
 			/*Management Port to submit computer*/
-			this.cmop = new ControllerManagementOutboundPort(
-					ControllerManagementOutboundPortURI,
-					new AbstractComponent() {}) ;
-			this.cmop.publishPort() ;
+		
 			this.cmop.doConnection(
 					ControllerManagementInboundPortURI,
 					ControllerManagementConnector.class.getCanonicalName()) ;
+			
+			/*Request Generator 1*/
+			
+			this.rgmop.doConnection(
+					RequestGeneratorManagementInboundPortURI,
+					RequestGeneratorManagementConnector.class.getCanonicalName()) ;
 
+			/*Request Generator 2*/
+			
+			this.rgmop2.doConnection(
+					RequestGeneratorManagementInboundPortURI2,
+					RequestGeneratorManagementConnector.class.getCanonicalName()) ;
 
 		} else if (thisJVMURI.equals(COMPUTER_JVMURI)) {
+
+			this.cssPort.doConnection(
+					ComputerStaticStateDataInboundPortURI,
+					DataConnector.class.getCanonicalName()) ;
+			
+			this.cdsPort.
+			doConnection(
+					ComputerDynamicStateDataInboundPortURI,
+					ControlledDataConnector.class.getCanonicalName()) ;
+			
 			/* Link The controller and Computer */
-			cmop.linkComputer(csPort);
+			
 		} else {
 			System.out.println("Error, wrong JVM URI: " + thisJVMURI) ;
 			System.exit(1) ;
@@ -278,9 +340,9 @@ extends		AbstractDistributedCVM
 		super.start() ;
 
 		if (thisJVMURI.equals(CONTROLLER_JVMURI)) {
-
+			cmop.linkComputer(ComputerServicesOutboundPortURI,ComputerServicesInboundPortURI);
 		} else if (thisJVMURI.equals(COMPUTER_JVMURI)) {
-
+			
 		} else {
 			System.out.println("Error, wrong JVM URI: " + thisJVMURI) ;
 			System.exit(1) ;
@@ -302,9 +364,9 @@ extends		AbstractDistributedCVM
 	public void			shutdown() throws Exception
 	{
 		if (thisJVMURI.equals(CONTROLLER_JVMURI)) {
-
+			
 		} else if (thisJVMURI.equals(COMPUTER_JVMURI)) {
-
+			
 		} else {
 			System.out.println("Error, wrong JVM URI: " + thisJVMURI) ;
 			System.exit(1) ;

@@ -1,5 +1,7 @@
 package fr.upmc.datacenter.controller.interfaces;
 
+import fr.upmc.components.interfaces.OfferedI;
+import fr.upmc.components.interfaces.RequiredI;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 /**
@@ -9,10 +11,10 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
-public interface ApplicationRequestI {
+public interface ApplicationRequestI extends OfferedI,RequiredI{
 	public boolean acceptApplication(Integer application,
 			String requestGeneratorURI) throws Exception;
 

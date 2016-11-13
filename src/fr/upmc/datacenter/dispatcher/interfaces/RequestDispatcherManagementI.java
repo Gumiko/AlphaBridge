@@ -1,4 +1,8 @@
 package fr.upmc.datacenter.dispatcher.interfaces;
+
+import fr.upmc.components.interfaces.OfferedI;
+import fr.upmc.components.interfaces.RequiredI;
+
 /**
  * The interface <code>RequestDispatcherManagementI</code>defines the methods
  * to manage the Request Dispatcher.
@@ -6,10 +10,10 @@ package fr.upmc.datacenter.dispatcher.interfaces;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
-public interface RequestDispatcherManagementI {
+public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	/**
 	 * deploy a vm to the request dispatcher
 	 * @param rd			id of the request dispatcher.

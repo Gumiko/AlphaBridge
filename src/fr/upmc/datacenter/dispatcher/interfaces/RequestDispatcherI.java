@@ -1,5 +1,7 @@
 package fr.upmc.datacenter.dispatcher.interfaces;
 
+import fr.upmc.components.interfaces.OfferedI;
+import fr.upmc.components.interfaces.RequiredI;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
@@ -10,10 +12,10 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
-public interface RequestDispatcherI {
+public interface RequestDispatcherI extends OfferedI,RequiredI{
 	/**
 	 * Link the Request generator to the Request Dispatcher
 	 * @param c_out			ComputerServicesOutboundPort of the computer.

@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import fr.upmc.components.AbstractComponent;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherI;
+import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
 import fr.upmc.datacenter.software.connectors.RequestNotificationConnector;
 import fr.upmc.datacenter.software.connectors.RequestSubmissionConnector;
 import fr.upmc.datacenter.software.interfaces.RequestI;
 import fr.upmc.datacenter.software.interfaces.RequestNotificationHandlerI;
+import fr.upmc.datacenter.software.interfaces.RequestNotificationI;
 import fr.upmc.datacenter.software.interfaces.RequestSubmissionHandlerI;
+import fr.upmc.datacenter.software.interfaces.RequestSubmissionI;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestNotificationOutboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionInboundPort;
@@ -18,7 +21,7 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
 
 public class RequestDispatcher extends AbstractComponent
-implements RequestDispatcherI,RequestSubmissionHandlerI,RequestNotificationHandlerI
+implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHandlerI,RequestNotificationHandlerI
 {
 	
 	public static final String VM_MANAGEMENT="DispatcherVMManagementOut";
@@ -51,9 +54,12 @@ implements RequestDispatcherI,RequestSubmissionHandlerI,RequestNotificationHandl
 		rnip=new HashMap<Integer,RequestNotificationInboundPort>();
 		
 		/*RD Ports connection with RG*/
+		this.addOfferedInterface(RequestSubmissionI.class);
 		rsip = new RequestSubmissionInboundPort(REQ_SUB_IN+id, this);
 		this.addPort(rsip);
 		this.rsip.publishPort();
+		
+		this.addRequiredInterface(RequestNotificationI.class);
 		rnop=new RequestNotificationOutboundPort(REQ_NOT_OUT+id, this);
 		this.addPort(rnop);
 		this.rnop.publishPort();
@@ -104,7 +110,8 @@ implements RequestDispatcherI,RequestSubmissionHandlerI,RequestNotificationHandl
 	
 	public void linkRequestGenerator(RequestSubmissionOutboundPort rg_rsop,RequestNotificationInboundPort rg_rnip) throws Exception{
 		this.logMessage("Linking RG to Dispatcher["+id+"] ...");
-		this.logMessage(rg_rsop +" "+rg_rnip);
+		this.logMessage("CONNECTION : "+rg_rsop.getPortURI()+" -> "+rsip.getPortURI());
+		this.logMessage("CONNECTION : "+rnop.getPortURI()+" -> "+rg_rnip.getPortURI());
 		rg_rsop.doConnection(rsip.getPortURI(), RequestSubmissionConnector.class.getCanonicalName());
 		rnop.doConnection(rg_rnip.getPortURI(), RequestNotificationConnector.class.getCanonicalName());
 		
@@ -130,6 +137,38 @@ implements RequestDispatcherI,RequestSubmissionHandlerI,RequestNotificationHandl
 	public void acceptRequestTerminationNotification(RequestI r) throws Exception {
 		this.logMessage("Dispatcher&T["+id+"] : "+r.getRequestURI() +" => "+rnop.getPortURI());
 		this.rnop.notifyRequestTermination(r);
+		
+	}
+
+
+
+	@Override
+	public void deployVM(int rd, String RequestDispatcherURIDVM) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void destroyVM(String uriComputerParent, String vm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void initVM(int application, String uriComputerParent, String vm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void unbindVM(String uriComputerParent, String vm) throws Exception {
+		// TODO Auto-generated method stub
 		
 	}
 

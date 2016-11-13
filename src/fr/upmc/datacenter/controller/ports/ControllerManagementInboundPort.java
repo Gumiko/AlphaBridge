@@ -11,7 +11,7 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public class ControllerManagementInboundPort
@@ -44,5 +44,14 @@ public class ControllerManagementInboundPort
 		public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
 			final Controller c = (Controller) this.owner;
 			c.linkComputer(c_out);
+		}
+		
+		/**
+		 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#linkComputer(String csopURI)
+		 */
+		@Override
+		public void linkComputer(String csopURI,String csipURI) throws Exception {
+			final Controller c = (Controller) this.owner;
+			c.linkComputer(csopURI,csipURI);
 		}
 }

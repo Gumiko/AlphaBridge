@@ -16,6 +16,7 @@ import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.hardware.computers.Computer;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
+import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
 import fr.upmc.datacenter.hardware.computers.interfaces.ComputerServicesI;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.tests.ComputerMonitor;
@@ -34,7 +35,7 @@ import fr.upmc.datacenterclient.requestgenerator.interfaces.RequestGeneratorMana
 import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagementInboundPort;
 
 public class Controller extends AbstractComponent
-implements ControllerI,ApplicationRequestI,RequestDispatcherManagementI
+implements ControllerI,ApplicationRequestI,ControllerManagementI,RequestDispatcherManagementI
 {
 
 	public static final String CONTROLLER_PREFIX = "CO_";
@@ -55,7 +56,7 @@ implements ControllerI,ApplicationRequestI,RequestDispatcherManagementI
 	Map<Integer,String> applicationURI;
 	Map<Integer,String> requestDispatcherURI;
 	Map<Integer,String> requestDispatcherManagementURIs;
-	/* Liste des VM attribuer à un Request dispatcher */
+	/* Liste des VM attribuer ï¿½ un Request dispatcher */
 	Map<Integer,HashMap<Integer,String>> requestDispatcherVMURIs;
 	Map<Integer,String> computerURIs;
 	Map<Integer,ComputerServicesOutboundPort> computerPorts;
@@ -141,7 +142,7 @@ implements ControllerI,ApplicationRequestI,RequestDispatcherManagementI
 		/*Creation of the VMs*/
 		Map<Integer, ApplicationVM> createdVMs = VMFactory.createVMs(PARAMETER_INITIAL_NB_VM, VMFactory.URI_PREFIX+"ApplicationVMManagementInboundPortURI_");
 
-		this.addRequiredInterface(ApplicationVMManagementI.class);
+		//this.addRequiredInterface(ApplicationVMManagementI.class);
 		for(Entry<Integer, ApplicationVM> vm : createdVMs.entrySet()) {
 			Integer key = vm.getKey();
 
@@ -161,8 +162,8 @@ implements ControllerI,ApplicationRequestI,RequestDispatcherManagementI
 		/*Allocation of the core for the VMs*/
 
 		for(Entry<Integer, ApplicationVM> vm : createdVMs.entrySet()) {
-
 			for(Entry<Integer, ComputerServicesOutboundPort> ports : computerPorts.entrySet()){
+				//this.logMessage(""+ports.getValue());
 				AllocatedCore[] aC =ports.getValue().allocateCores(PARAMETER_INITIAL_NB_CORE);
 				if(aC.length!=0){
 					vm.getValue().allocateCores(aC);
@@ -230,6 +231,21 @@ implements ControllerI,ApplicationRequestI,RequestDispatcherManagementI
 	public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
 		this.logMessage("Linking Computer to :"+this.controllerURI);
 		computerPorts.put(COMP_ID++,c_out);
+		this.logMessage("Computer linked !");
+
+	}
+	
+	public void linkComputer(String csop_uri,String csip_uri) throws Exception {
+		this.logMessage("Linking Computer to :"+this.controllerURI);
+		ComputerServicesOutboundPort csPort = new ComputerServicesOutboundPort(
+				csop_uri,
+		new AbstractComponent() {}) ;
+		csPort.publishPort() ;
+		csPort.doConnection(
+				csip_uri,
+		ComputerServicesConnector.class.getCanonicalName()) ;
+		computerPorts.put(COMP_ID++,csPort);
+		this.logMessage("Computer linked !");
 
 	}
 	

@@ -12,7 +12,7 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 @SuppressWarnings("unused")
@@ -38,6 +38,14 @@ public class ControllerManagementOutboundPort extends AbstractOutboundPort imple
 	@Override
 	public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
 		((ControllerManagementI)this.connector).linkComputer(c_out);
+	}
+	
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#linkComputer(String csopUri)
+	 */
+	@Override
+	public void linkComputer(String csopUri,String csipUri) throws Exception {
+		((ControllerManagementI)this.connector).linkComputer(csopUri,csipUri);
 	}
 
 }

@@ -1,5 +1,7 @@
 package fr.upmc.datacenter.controller.interfaces;
 
+import fr.upmc.components.interfaces.OfferedI;
+import fr.upmc.components.interfaces.RequiredI;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
  * The interface <code>ControllerManagementI</code>defines the methods
@@ -8,10 +10,10 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
-public interface ControllerManagementI {
+public interface ControllerManagementI extends OfferedI,RequiredI{
 	
 	/**
 	 * add a computer which the controller will use to create new vm
@@ -19,4 +21,12 @@ public interface ControllerManagementI {
 	 * @throws Exception
 	 */
 	public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception;
+	
+	/**
+	 * add a computer which the controller will use to create new vm
+	 * @param csopURI			ComputerServicesOutboundPort URI of the computer.
+	 * @param csipURI			ComputerServicesInboundPort URI of the computer
+	 * @throws Exception
+	 */
+	public void linkComputer(String csopURI,String csipURI) throws Exception;
 }
