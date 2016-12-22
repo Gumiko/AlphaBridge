@@ -1,4 +1,4 @@
-package fr.upmc.tests.multijvm;
+package fr.upmc.tests.DCVM;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -341,7 +341,6 @@ extends		AbstractDistributedCVM
 
 		if (thisJVMURI.equals(CONTROLLER_JVMURI)) {
 			cmop.linkComputer(ComputerServicesOutboundPortURI,ComputerServicesInboundPortURI);
-			
 		} else if (thisJVMURI.equals(COMPUTER_JVMURI)) {
 			
 		} else {
@@ -408,12 +407,12 @@ extends		AbstractDistributedCVM
 		if (thisJVMURI.equals(CONTROLLER_JVMURI)) {
 			Thread.sleep(2000L) ;
 			if(arop.acceptApplication(1, "rg1",rg_rsop,rg_rnip)){
-				Thread.sleep(3000L) ;
+				Thread.sleep(2000L) ;
 				rgmop.startGeneration();
 				Thread.sleep(5000L);
 			}
 			if(arop.acceptApplication(2, "rg2",rg_rsop2,rg_rnip2)){
-				Thread.sleep(3000L) ;
+				Thread.sleep(2000L) ;
 				rgmop2.startGeneration();
 			}
 			Thread.sleep(20000L);

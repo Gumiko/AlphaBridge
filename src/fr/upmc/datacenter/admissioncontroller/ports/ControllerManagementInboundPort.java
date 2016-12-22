@@ -1,9 +1,9 @@
-package fr.upmc.datacenter.controller.ports;
+package fr.upmc.datacenter.admissioncontroller.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractInboundPort;
-import fr.upmc.datacenter.controller.Controller;
-import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
+import fr.upmc.datacenter.admissioncontroller.AdmissionController;
+import fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
  * The class <code>ControllerManagementInboundPort</code>
@@ -25,7 +25,7 @@ public class ControllerManagementInboundPort
 		{
 			super(ControllerManagementI.class, owner) ;
 
-			assert	owner != null && owner instanceof Controller ;
+			assert	owner != null && owner instanceof AdmissionController ;
 		}
 
 		public				ControllerManagementInboundPort(
@@ -35,23 +35,23 @@ public class ControllerManagementInboundPort
 		{
 			super(uri, ControllerManagementI.class, owner);
 
-			assert	owner != null && owner instanceof Controller ;
+			assert	owner != null && owner instanceof AdmissionController ;
 		}
 		/**
-		 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
+		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
 		 */
 		@Override
 		public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
-			final Controller c = (Controller) this.owner;
+			final AdmissionController c = (AdmissionController) this.owner;
 			c.linkComputer(c_out);
 		}
 		
 		/**
-		 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#linkComputer(String csopURI)
+		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI#linkComputer(String csopURI)
 		 */
 		@Override
 		public void linkComputer(String csopURI,String csipURI) throws Exception {
-			final Controller c = (Controller) this.owner;
+			final AdmissionController c = (AdmissionController) this.owner;
 			c.linkComputer(csopURI,csipURI);
 		}
 }

@@ -2,7 +2,7 @@ package fr.upmc.datacenter.dispatcher.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractInboundPort;
-import fr.upmc.datacenter.controller.Controller;
+import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 /**
  * The class <code>RequestDispatcherManagementInboundPort</code>
@@ -10,7 +10,7 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort implements RequestDispatcherManagementI{
@@ -22,7 +22,7 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		{
 			super(RequestDispatcherManagementI.class, owner) ;
 
-			assert	owner != null && owner instanceof Controller ;
+			assert	owner != null && owner instanceof AdmissionController ;
 		}
 
 		public				RequestDispatcherManagementInboundPort(
@@ -32,14 +32,14 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		{
 			super(uri, RequestDispatcherManagementI.class, owner);
 
-			assert	owner != null && owner instanceof Controller ;
+			assert	owner != null && owner instanceof AdmissionController ;
 		}
 		/**
 		 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 		 */
 		@Override
 		public void deployVM(int rd, String RequestDispatcherURIDVM) {
-			final Controller c = (Controller) this.owner;
+			final AdmissionController c = (AdmissionController) this.owner;
 			c.deployVM(rd, RequestDispatcherURIDVM);
 			
 		}
@@ -48,7 +48,7 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		 */
 		@Override
 		public void destroyVM(String uriComputerParent, String vm) {
-			final Controller c = (Controller) this.owner;
+			final AdmissionController c = (AdmissionController) this.owner;
 			c.destroyVM(uriComputerParent, vm);
 			
 		}
@@ -57,7 +57,7 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		 */
 		@Override
 		public void initVM(int application, String uriComputerParent, String vm) {
-			final Controller c = (Controller) this.owner;
+			final AdmissionController c = (AdmissionController) this.owner;
 			c.initVM(application, uriComputerParent, vm);
 			
 		}
@@ -66,7 +66,7 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		 */
 		@Override
 		public void unbindVM(String uriComputerParent, String vm) throws Exception {
-			final Controller c = (Controller) this.owner;
+			final AdmissionController c = (AdmissionController) this.owner;
 			c.unbindVM(uriComputerParent, vm);
 			
 		}

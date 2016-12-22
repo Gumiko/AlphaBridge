@@ -8,13 +8,13 @@ import java.util.Set;
 import fr.upmc.components.AbstractComponent;
 import fr.upmc.components.connectors.DataConnector;
 import fr.upmc.components.cvm.AbstractCVM;
+import fr.upmc.datacenter.admissioncontroller.AdmissionController;
+import fr.upmc.datacenter.admissioncontroller.connectors.ApplicationRequestConnector;
+import fr.upmc.datacenter.admissioncontroller.connectors.ControllerManagementConnector;
+import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestInboundPort;
+import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestOutboundPort;
+import fr.upmc.datacenter.admissioncontroller.ports.ControllerManagementOutboundPort;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
-import fr.upmc.datacenter.controller.Controller;
-import fr.upmc.datacenter.controller.connectors.ApplicationRequestConnector;
-import fr.upmc.datacenter.controller.connectors.ControllerManagementConnector;
-import fr.upmc.datacenter.controller.ports.ApplicationRequestInboundPort;
-import fr.upmc.datacenter.controller.ports.ApplicationRequestOutboundPort;
-import fr.upmc.datacenter.controller.ports.ControllerManagementOutboundPort;
 import fr.upmc.datacenter.hardware.computers.Computer;
 import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerDynamicStateDataOutboundPort;
@@ -164,7 +164,7 @@ public class TestController extends AbstractCVM{
 				ControlledDataConnector.class.getCanonicalName()) ;
 
 		/* Create The Controller */
-		Controller controller= new Controller("controller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
+		AdmissionController controller= new AdmissionController("controller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
 
 		/*Application submit port */
 		this.arop = new ApplicationRequestOutboundPort(

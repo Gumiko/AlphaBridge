@@ -63,6 +63,10 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		rnop=new RequestNotificationOutboundPort(REQ_NOT_OUT+id, this);
 		this.addPort(rnop);
 		this.rnop.publishPort();
+		
+		/*Test*/
+		//this.addRequiredInterface(RequestSubmissionI.class);
+		//this.addOfferedInterface(RequestNotificationI.class);
 	}
 	
 	

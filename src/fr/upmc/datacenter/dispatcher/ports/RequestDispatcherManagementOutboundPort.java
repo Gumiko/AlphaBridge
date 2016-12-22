@@ -2,8 +2,8 @@ package fr.upmc.datacenter.dispatcher.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
-import fr.upmc.datacenter.controller.Controller;
-import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
+import fr.upmc.datacenter.admissioncontroller.AdmissionController;
+import fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
@@ -13,7 +13,7 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 @SuppressWarnings("unused")
@@ -28,7 +28,7 @@ implements	RequestDispatcherManagementI{
 	{
 		super(RequestDispatcherManagementI.class, owner) ;
 
-		assert	owner != null && owner instanceof Controller ;
+		assert	owner != null && owner instanceof AdmissionController ;
 	}
 
 	public				RequestDispatcherManagementOutboundPort(
@@ -38,7 +38,7 @@ implements	RequestDispatcherManagementI{
 	{
 		super(uri, RequestDispatcherManagementI.class, owner);
 
-		assert	owner != null && owner instanceof Controller ;
+		assert	owner != null && owner instanceof AdmissionController ;
 	}
 	/**
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)

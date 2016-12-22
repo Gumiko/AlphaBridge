@@ -1,9 +1,9 @@
-package fr.upmc.datacenter.controller.ports;
+package fr.upmc.datacenter.admissioncontroller.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
-import fr.upmc.datacenter.controller.Controller;
-import fr.upmc.datacenter.controller.interfaces.ApplicationRequestI;
+import fr.upmc.datacenter.admissioncontroller.AdmissionController;
+import fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 /**
@@ -12,7 +12,7 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public class ApplicationRequestOutboundPort extends AbstractOutboundPort implements ApplicationRequestI{
@@ -22,7 +22,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	{
 		super(ApplicationRequestI.class, owner) ;
 
-		assert	owner != null && owner instanceof Controller ;
+		assert	owner != null && owner instanceof AdmissionController ;
 	}
 
 	public				ApplicationRequestOutboundPort(
@@ -32,7 +32,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	{
 		super(uri, ApplicationRequestI.class, owner);
 
-		assert	owner != null && owner instanceof Controller ;
+		assert	owner != null && owner instanceof AdmissionController ;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 		return ((ApplicationRequestI)this.connector).acceptApplication(application, requestGeneratorURI) ;
 	}
 	/**
-	 * @see fr.upmc.datacenter.controller.interfaces.ApplicationRequestI#acceptApplication(Integer application, String requestGeneratorURI,
+	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI#acceptApplication(Integer application, String requestGeneratorURI,
 			RequestSubmissionOutboundPort rg_rsop, RequestNotificationInboundPort rg_rnip)
 	 */
 	@Override

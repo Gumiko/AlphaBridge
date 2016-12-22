@@ -1,4 +1,4 @@
-package fr.upmc.datacenter.controller.Factory;
+package fr.upmc.datacenter.admissioncontroller.factory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cédric Ribeiro & Mokrane Kadri</a>
+ * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public class VMFactory{
