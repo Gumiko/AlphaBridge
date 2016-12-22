@@ -219,6 +219,89 @@ implements ApplicationRequestI,ControllerManagementI,RequestDispatcherManagement
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop,String rg_rnip) throws Exception {
+		this.logMessage("New Application : "+application+" from ["+requestGeneratorURI+"]");
+		/*Creation of the RequestDispatcher*/
+		RequestDispatcher rd=new RequestDispatcher(RD_ID);
+		this.logMessage("Controller : RD["+RD_ID+"] created");
+		rd.toggleLogging();
+		rd.toggleTracing();
+
+		/*Creation of the VMs*/
+		Map<Integer, ApplicationVM> createdVMs = VMFactory.createVMs(PARAMETER_INITIAL_NB_VM, VMFactory.URI_PREFIX+"ApplicationVMManagementInboundPortURI_");
+
+		//this.addRequiredInterface(ApplicationVMManagementI.class);
+		for(Entry<Integer, ApplicationVM> vm : createdVMs.entrySet()) {
+			Integer key = vm.getKey();
+
+			ApplicationVMManagementOutboundPort vmMPort = new ApplicationVMManagementOutboundPort(CONTROLLER_PREFIX+"ApplicationVMManagementOutboundPortURI_" + key,this);
+
+			vmMPort.publishPort();
+
+			vmMPort.doConnection(
+					VMFactory.URI_PREFIX+"ApplicationVMManagementInboundPortURI_" + key,
+					ApplicationVMManagementConnector.class.getCanonicalName());
+			/*Useless for now, will be needed for the next step */
+			this.vmManagementOBPwithVMUris.put(vmMPort,((ApplicationVM)vm.getValue()).findInboundPortURIsFromInterface(RequestSubmissionI.class)[0]);
+
+			this.vmManagementOutBountPorts.put(key, vmMPort);
+		}
+
+		/*Allocation of the core for the VMs*/
+
+		for(Entry<Integer, ApplicationVM> vm : createdVMs.entrySet()) {
+			for(Entry<Integer, ComputerServicesOutboundPort> ports : computerPorts.entrySet()){
+				//this.logMessage(""+ports.getValue());
+				AllocatedCore[] aC =ports.getValue().allocateCores(PARAMETER_INITIAL_NB_CORE);
+				if(aC.length!=0){
+					vm.getValue().allocateCores(aC);
+					break;
+
+				}else{
+					/*TODO*
+					 * We can't allocate any core to the application
+					 * We refuse the submission
+					 * -> Remove the allocation of the vms etc ...
+					 */
+					return false;
+				}
+			}
+		}
+		/*Link components*/
+		/*Link all the VMs to the Request Dispatcher*/
+		for(Entry<Integer, ApplicationVM> vm : createdVMs.entrySet()){
+			rd.linkVM(vm.getKey(), vm.getValue());
+
+			RequestSubmissionOutboundPort rdrsop = 
+					(RequestSubmissionOutboundPort) rd.findPortFromURI(RequestDispatcher.REQ_SUB_OUT + vm.getKey());
+			rdrsop.doConnection(VMFactory.INBOUND_URI_PREFIX + vm.getKey(), 
+					RequestSubmissionConnector.class.getCanonicalName());
+
+			RequestNotificationOutboundPort vmrnop =
+					(RequestNotificationOutboundPort)
+					vm.getValue().findPortFromURI(VMFactory.OUTBOUND_URI_PREFIX + vm.getKey());
+			vmrnop.doConnection(RequestDispatcher.REQ_NOT_IN + vm.getKey(), 
+					RequestNotificationConnector.class.getCanonicalName());
+			/* Not needed now ...*/
+//			ApplicationVMManagementOutboundPort avmmop = 
+//					(ApplicationVMManagementOutboundPort)rd.findPortFromURI(RequestDispatcher.VM_MANAGEMENT+vm.getKey());
+//
+//			avmmop.doConnection(VMFactory.URI_PREFIX+vm.getKey(),
+//					ApplicationVMManagementConnector.class.getCanonicalName());
+		}
+		
+		/*Link the requestGenerator and the RequestDispatcher*/
+		rd.linkRequestGenerator(rg_rsop, rg_rnip);
+
+		
+
+		RD_ID++;
+		APP_ID++;
+		return true;
+
+	}
 
 
 

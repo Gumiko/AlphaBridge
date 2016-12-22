@@ -122,6 +122,17 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.logMessage("RG linked to Dispatcher["+id+"] !"); //"+rg_rnip.getPortURI()+" | "+rg_rsop.getPortURI() );
 	}
 	
+	public void linkRequestGenerator(String rg_rsopURI,String rg_rnipURI) throws Exception{
+		this.logMessage("Linking RG to Dispatcher["+id+"] ...");
+		this.logMessage("CONNECTION : "+rg_rsopURI+" -> "+rsip.getPortURI());
+		this.logMessage("CONNECTION : "+rnop.getPortURI()+" -> "+rg_rnipURI);
+		RequestSubmissionOutboundPort rg_rsop=new RequestSubmissionOutboundPort(rg_rsopURI, this);
+		RequestNotificationInboundPort rg_rnip = new RequestNotificationInboundPort(rg_rnipURI, this);
+		rg_rsop.doConnection(rsip.getPortURI(), RequestSubmissionConnector.class.getCanonicalName());
+		rnop.doConnection(rg_rnip.getPortURI(), RequestNotificationConnector.class.getCanonicalName());
+		this.logMessage("RG linked to Dispatcher["+id+"] !"); //"+rg_rnip.getPortURI()+" | "+rg_rsop.getPortURI() );
+	}
+	
 	public void	acceptRequestSubmission(final RequestI r)
 	throws Exception
 	{

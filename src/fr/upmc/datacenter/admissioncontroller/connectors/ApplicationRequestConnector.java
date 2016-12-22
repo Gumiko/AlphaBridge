@@ -32,5 +32,10 @@ implements	ApplicationRequestI
 			RequestSubmissionOutboundPort rg_rsop, RequestNotificationInboundPort rg_rnip) throws Exception {
 		return ((ApplicationRequestI)this.offering).acceptApplication(application, requestGeneratorURI, rg_rsop, rg_rnip);
 	}
+	@Override
+	public boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop, String rg_rnip)
+			throws Exception {
+		return ((ApplicationRequestI)this.offering).acceptApplication(application, requestGeneratorURI, rg_rsop, rg_rnip);
+	}
 }
 

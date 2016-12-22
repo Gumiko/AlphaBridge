@@ -30,5 +30,8 @@ public interface ApplicationRequestI extends OfferedI,RequiredI{
 	public boolean acceptApplication(Integer application, String requestGeneratorURI, RequestSubmissionOutboundPort rg_rsop,
 			RequestNotificationInboundPort rg_rnip) throws Exception;
 
+	boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop, String rg_rnip)
+			throws Exception;
+
 }
 
