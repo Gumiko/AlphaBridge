@@ -18,7 +18,7 @@ import fr.upmc.components.examples.smoothing.sensor.SensorSimulator;
 import fr.upmc.components.ports.PortI;
 import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.admissioncontroller.connectors.ApplicationRequestConnector;
-import fr.upmc.datacenter.admissioncontroller.connectors.ControllerManagementConnector;
+import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestOutboundPort;
 import fr.upmc.datacenter.admissioncontroller.ports.ControllerManagementOutboundPort;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
@@ -288,7 +288,7 @@ extends		AbstractDistributedCVM
 		
 			this.cmop.doConnection(
 					ControllerManagementInboundPortURI,
-					ControllerManagementConnector.class.getCanonicalName()) ;
+					AdmissionControllerManagementConnector.class.getCanonicalName()) ;
 			
 			/*Request Generator 1*/
 			

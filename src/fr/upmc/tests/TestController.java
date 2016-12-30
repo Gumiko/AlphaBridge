@@ -10,7 +10,7 @@ import fr.upmc.components.connectors.DataConnector;
 import fr.upmc.components.cvm.AbstractCVM;
 import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.admissioncontroller.connectors.ApplicationRequestConnector;
-import fr.upmc.datacenter.admissioncontroller.connectors.ControllerManagementConnector;
+import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestInboundPort;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestOutboundPort;
 import fr.upmc.datacenter.admissioncontroller.ports.ControllerManagementOutboundPort;
@@ -182,7 +182,7 @@ public class TestController extends AbstractCVM{
 		this.cmop.publishPort() ;
 		this.cmop.doConnection(
 				ControllerManagementInboundPortURI,
-				ControllerManagementConnector.class.getCanonicalName()) ;
+				AdmissionControllerManagementConnector.class.getCanonicalName()) ;
 
 		/* Link The controller and Computer */
 		cmop.linkComputer(csPort);

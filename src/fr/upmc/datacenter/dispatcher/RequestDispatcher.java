@@ -1,5 +1,6 @@
 package fr.upmc.datacenter.dispatcher;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import fr.upmc.components.AbstractComponent;
@@ -43,6 +44,15 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	protected Map<Integer,RequestSubmissionOutboundPort> rsop;
 	protected Map<Integer,RequestNotificationInboundPort> rnip;
 	protected Map<Integer,ApplicationVMManagementOutboundPort> avmmop;
+	
+	/* Data Management */
+	Map<String,Long> startTime=new HashMap<String,Long>();
+	Map<String,Long> endTime=new HashMap<String,Long>();
+	Map<String,Long> lastTime=new HashMap<String,Long>();
+	
+	int numberOfRequests;
+	int totalTime;
+	int averageTime;
 	
 	public RequestDispatcher(int id) throws Exception{
 		/* Init Request Dispatcher */
@@ -143,8 +153,9 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	public void	acceptRequestSubmissionAndNotify(final RequestI r) throws Exception
 	{
-		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" => "+"VM-"+lastVM);
+		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" ==> "+"VM-"+lastVM);
 		rsop.get(lastVM).submitRequestAndNotify(r);
+		startTime.put(r.getRequestURI(), System.currentTimeMillis());
 		lastVM=(++lastVM)%rsop.keySet().size();
 	}
 
@@ -152,7 +163,9 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void acceptRequestTerminationNotification(RequestI r) throws Exception {
 		this.logMessage("Dispatcher&T["+id+"] : "+r.getRequestURI() +" => "+rnop.getPortURI());
 		this.rnop.notifyRequestTermination(r);
-		
+		endTime.put(r.getRequestURI(), System.currentTimeMillis());
+		lastTime.put(r.getRequestURI(), endTime.get(r.getRequestURI())-startTime.get(r.getRequestURI()));
+		totalTime+=lastTime.get(r.getRequestURI());
 	}
 
 
