@@ -27,14 +27,14 @@ implements ControllerActuatorI,RequestDispatcherSensorI{
 	String requestDispatcherURI;
 	RequestDispatcherManagementOutboundPort rdmop;
 	
-	public Controller(String controllerURI,String requestDispatcherURI,String SensorURI) throws Exception{
+	public Controller(String controllerURI,String rddsdipURI,String rdmipURI) throws Exception{
 		this.controllerURI=controllerURI;
 		/*Link the controller to the Request Dispatcher */
 		rdmop=new RequestDispatcherManagementOutboundPort(controllerURI,this);
-		rdmop.doConnection(requestDispatcherURI, RequestDispatcherManagementConnector.class.getCanonicalName());
+		rdmop.doConnection(rdmipURI, RequestDispatcherManagementConnector.class.getCanonicalName());
 		
 		rddsdop=new RequestDispatcherDynamicStateDataOutboundPort(this,controllerURI);
-		rddsdop.doConnection(requestDispatcherURI,ControlledDataConnector.class.getCanonicalName());
+		rddsdop.doConnection(rddsdipURI,ControlledDataConnector.class.getCanonicalName());
 	}
 	
 

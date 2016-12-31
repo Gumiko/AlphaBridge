@@ -9,6 +9,7 @@ import fr.upmc.components.interfaces.DataOfferedI.DataI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
+import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementInboundPort;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
@@ -32,7 +33,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 //	protected RequestDispatcherStaticStateDataInboundPort
 //											requestDispatcherStaticStateDataInboundPort ;
 	/** RequestDispatcher data inbound port through which it pushes its dynamic data.	*/
-	protected RequestDispatcherDynamicStateDataInboundPort requestDispatcherStateDataInboundPort ;
+	protected RequestDispatcherDynamicStateDataInboundPort rddsdip ;
 	/** future of the task scheduled to push dynamic data.					*/
 	protected ScheduledFuture<?>			pushingFuture ;
 	
@@ -44,6 +45,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public static final String REQ_NOT_OUT="DispatcherRequestNotOutURI";
 	public static final String REQ_NOT_IN="DispatcherRequestNotInURI";
 	
+	public static final String DYNAMIC_DATA_URI="RequestDispatcherDD";
+	
 	protected String RDuri;
 	protected int id;
 	
@@ -51,6 +54,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	
 	protected RequestSubmissionInboundPort	rsip;
 	protected RequestNotificationOutboundPort rnop;
+	
+	protected RequestDispatcherManagementInboundPort rdmip;
 	
 	protected Map<Integer,RequestSubmissionOutboundPort> rsop;
 	protected Map<Integer,RequestNotificationInboundPort> rnip;
@@ -84,6 +89,44 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		rnop=new RequestNotificationOutboundPort(REQ_NOT_OUT+id, this);
 		this.addPort(rnop);
 		this.rnop.publishPort();
+		
+		/*Test*/
+		//this.addRequiredInterface(RequestSubmissionI.class);
+		//this.addOfferedInterface(RequestNotificationI.class);
+	}
+	
+	public RequestDispatcher(int id, String controllerURi) throws Exception{
+		/* Init Request Dispatcher */
+		this.id=id;
+		this.RDuri="Dispatcher"+id;
+		lastVM=0;
+		
+		rsop=new HashMap<Integer,RequestSubmissionOutboundPort>();
+		rnip=new HashMap<Integer,RequestNotificationInboundPort>();
+		
+		/*RD Ports connection with RG*/
+		this.addOfferedInterface(RequestSubmissionI.class);
+		rsip = new RequestSubmissionInboundPort(REQ_SUB_IN+id, this);
+		this.addPort(rsip);
+		this.rsip.publishPort();
+		
+		this.addRequiredInterface(RequestNotificationI.class);
+		rnop=new RequestNotificationOutboundPort(REQ_NOT_OUT+id, this);
+		this.addPort(rnop);
+		this.rnop.publishPort();
+		
+		/*Dynamic data sending to the controller */
+		rddsdip=new RequestDispatcherDynamicStateDataInboundPort(DYNAMIC_DATA_URI+id, this);
+		this.addPort(rddsdip) ;
+		this.rddsdip.publishPort();
+		
+		/*
+		 *Management port used by the controller 
+		 */
+		
+		rdmip=new RequestDispatcherManagementInboundPort(VM_MANAGEMENT+id,this);
+		this.addPort(rdmip);
+		this.rdmip.publishPort();
 		
 		/*Test*/
 		//this.addRequiredInterface(RequestSubmissionI.class);
