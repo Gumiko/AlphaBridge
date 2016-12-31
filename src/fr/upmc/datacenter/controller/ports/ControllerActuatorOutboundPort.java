@@ -4,8 +4,6 @@ import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
 import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.controller.interfaces.ControllerActuatorI;
-import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
-import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 
 public class ControllerActuatorOutboundPort extends AbstractOutboundPort implements ControllerActuatorI{
 	public		ControllerActuatorOutboundPort(
