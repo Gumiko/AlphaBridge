@@ -1,11 +1,15 @@
 package fr.upmc.datacenter.dispatcher;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+
 import fr.upmc.components.AbstractComponent;
+import fr.upmc.components.interfaces.DataOfferedI.DataI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
+import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
+import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
 import fr.upmc.datacenter.software.connectors.RequestNotificationConnector;
@@ -19,11 +23,18 @@ import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestNotificationOutboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
-import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
 
 public class RequestDispatcher extends AbstractComponent
-implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHandlerI,RequestNotificationHandlerI
+implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHandlerI,RequestNotificationHandlerI,PushModeControllerI
 {
+	
+//	/** RequestDispatcher data inbound port through which it pushes its static data.	*/
+//	protected RequestDispatcherStaticStateDataInboundPort
+//											requestDispatcherStaticStateDataInboundPort ;
+	/** RequestDispatcher data inbound port through which it pushes its dynamic data.	*/
+	protected RequestDispatcherDynamicStateDataInboundPort requestDispatcherStateDataInboundPort ;
+	/** future of the task scheduled to push dynamic data.					*/
+	protected ScheduledFuture<?>			pushingFuture ;
 	
 	public static final String VM_MANAGEMENT="DispatcherVMManagementOut";
 	
@@ -198,6 +209,37 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void unbindVM(String uriComputerParent, String vm) throws Exception {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+
+	@Override
+	public void startUnlimitedPushing(int interval) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void startLimitedPushing(int interval, int n) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void stopPushing() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	public DataI getDynamicState() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
