@@ -20,23 +20,7 @@ public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	 * @param RequestDispatcherURIDVM uri of the vm.
 	 * @throws Exception
 	 */
-	public void deployVM(int rd, String RequestDispatcherURIDVM);
-	/**
-	 * take back a vm of the request dispatcher
-	 * @param uriComputerParent the uri of the computer which delivered the allocated cores.
-	 * @param vm Uri of the vm.
-	 * @throws Exception
-	 */
-	public void destroyVM(String uriComputerParent, String vm) ;
-
-	/**
-	 * Initialise a vm and send it to the request dispatcher
-	 * @param application id of the request generator
-	 * @param uriComputerParent the uri of the computer which delivered the allocated cores.
-	 * @param vm Uri of the vm.
-	 * @throws Exception
-	 */
-	public void initVM(int application, String uriComputerParent, String vm);
+	void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception;
 
 	/**
 	 * take back a vm of the request dispatcher
@@ -44,5 +28,6 @@ public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	 * @param vm Uri of the vm.
 	 * @throws Exception
 	 */
-	public void unbindVM(String uriComputerParent, String vm) throws Exception;
+	public void unbindVM(int id) throws Exception;
+	
 }

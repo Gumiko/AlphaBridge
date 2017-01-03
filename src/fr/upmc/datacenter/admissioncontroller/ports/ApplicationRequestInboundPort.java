@@ -40,22 +40,6 @@ extends		AbstractInboundPort implements ApplicationRequestI
 	}
 
 	@Override
-	public boolean acceptApplication(Integer application, String requestGeneratorURI) throws Exception {
-		final AdmissionController c = (AdmissionController) this.owner;
-		return c.acceptApplication(application, requestGeneratorURI);
-	}
-	/**
-	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI#acceptApplication(Integer application, String requestGeneratorURI,
-			RequestSubmissionOutboundPort rg_rsop, RequestNotificationInboundPort rg_rnip)
-	 */
-	@Override
-	public boolean acceptApplication(Integer application, String requestGeneratorURI,
-			RequestSubmissionOutboundPort rg_rsop, RequestNotificationInboundPort rg_rnip) throws Exception {
-		final AdmissionController c = (AdmissionController) this.owner;
-		return c.acceptApplication(application,requestGeneratorURI,rg_rsop,rg_rnip);
-	}
-
-	@Override
 	public boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop, String rg_rnip)
 			throws Exception {
 		final AdmissionController c = (AdmissionController) this.owner;

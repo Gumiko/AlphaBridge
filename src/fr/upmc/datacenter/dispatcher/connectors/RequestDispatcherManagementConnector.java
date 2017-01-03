@@ -14,35 +14,20 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 public class RequestDispatcherManagementConnector extends		AbstractConnector
 implements	RequestDispatcherManagementI{
 	/**
+	 * @throws Exception 
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 	 */
 	@Override
-	public void deployVM(int rd, String RequestDispatcherURIDVM) {
-		((RequestDispatcherManagementI)this.offering).deployVM(rd, RequestDispatcherURIDVM);
-		
-	}
-	/**
-	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#destroyVM(String uriComputerParent, String vm)
-	 */
-	@Override
-	public void destroyVM(String uriComputerParent, String vm) {
-		((RequestDispatcherManagementI)this.offering).destroyVM(uriComputerParent, vm);
-		
-	}
-	/**
-	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#initVM(int application, String uriComputerParent, String vm)
-	 */
-	@Override
-	public void initVM(int application, String uriComputerParent, String vm) {
-		((RequestDispatcherManagementI)this.offering).initVM(application, uriComputerParent, vm);
+	public void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception {
+		((RequestDispatcherManagementI)this.offering).bindVM(id,str_rsop,str_rnip,str_avmmop);
 		
 	}
 	/**
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#unbindVM(String uriComputerParent, String vm)
 	 */
 	@Override
-	public void unbindVM(String uriComputerParent, String vm) throws Exception {
-		((RequestDispatcherManagementI)this.offering).unbindVM(uriComputerParent, vm);
+	public void unbindVM(int id) throws Exception {
+		((RequestDispatcherManagementI)this.offering).unbindVM(id);
 		
 	}
 }

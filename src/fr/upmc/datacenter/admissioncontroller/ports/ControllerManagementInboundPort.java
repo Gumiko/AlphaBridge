@@ -3,7 +3,7 @@ package fr.upmc.datacenter.admissioncontroller.ports;
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractInboundPort;
 import fr.upmc.datacenter.admissioncontroller.AdmissionController;
-import fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI;
+import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
  * The class <code>ControllerManagementInboundPort</code>
@@ -15,7 +15,7 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public class ControllerManagementInboundPort
-	extends		AbstractInboundPort implements ControllerManagementI
+	extends		AbstractInboundPort implements AdmissionControllerManagementI
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public class ControllerManagementInboundPort
 				ComponentI owner
 				) throws Exception
 		{
-			super(ControllerManagementI.class, owner) ;
+			super(AdmissionControllerManagementI.class, owner) ;
 
 			assert	owner != null && owner instanceof AdmissionController ;
 		}
@@ -33,12 +33,12 @@ public class ControllerManagementInboundPort
 				ComponentI owner
 				) throws Exception
 		{
-			super(uri, ControllerManagementI.class, owner);
+			super(uri, AdmissionControllerManagementI.class, owner);
 
 			assert	owner != null && owner instanceof AdmissionController ;
 		}
 		/**
-		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
+		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
 		 */
 		@Override
 		public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
@@ -47,7 +47,7 @@ public class ControllerManagementInboundPort
 		}
 		
 		/**
-		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI#linkComputer(String csopURI)
+		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(String csopURI)
 		 */
 		@Override
 		public void linkComputer(String csopURI,String csipURI) throws Exception {

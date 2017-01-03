@@ -3,9 +3,10 @@ package fr.upmc.datacenter.extension.computer;
 import java.util.Map;
 import java.util.Set;
 
+import fr.upmc.datacenter.extension.vm.interfaces.ReservationI;
 import fr.upmc.datacenter.hardware.computers.Computer;
 
-public class ComputerExtended extends Computer{
+public class ComputerExtended extends Computer implements ReservationI{
 
 	public ComputerExtended(String computerURI, Set<Integer> possibleFrequencies, Map<Integer, Integer> processingPower,
 			int defaultFrequency, int maxFrequencyGap, int numberOfProcessors, int numberOfCores,
@@ -16,4 +17,15 @@ public class ComputerExtended extends Computer{
 				computerDynamicStateDataInboundPortURI);
 	}
 
+	public void releaseCore(AllocatedCore ac) throws Exception{
+		super.releaseCore(ac);
+	}
+	
+	public AllocatedCore[] reserveCore(int number) throws Exception{
+		return super.allocateCores(number);
+	}
+	
+	public void reserveCore(int processorNo,int coreNo){
+		//??
+	}
 }

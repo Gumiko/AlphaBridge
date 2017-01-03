@@ -22,7 +22,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	{
 		super(ApplicationRequestI.class, owner) ;
 
-		assert	owner != null && owner instanceof AdmissionController ;
+		assert	owner != null && owner instanceof ApplicationRequestI ;
 	}
 
 	public				ApplicationRequestOutboundPort(
@@ -32,21 +32,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	{
 		super(uri, ApplicationRequestI.class, owner);
 
-		assert	owner != null && owner instanceof AdmissionController ;
-	}
-
-	@Override
-	public boolean acceptApplication(Integer application, String requestGeneratorURI) throws Exception {
-		return ((ApplicationRequestI)this.connector).acceptApplication(application, requestGeneratorURI) ;
-	}
-	/**
-	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI#acceptApplication(Integer application, String requestGeneratorURI,
-			RequestSubmissionOutboundPort rg_rsop, RequestNotificationInboundPort rg_rnip)
-	 */
-	@Override
-	public boolean acceptApplication(Integer application, String requestGeneratorURI,
-			RequestSubmissionOutboundPort rg_rsop, RequestNotificationInboundPort rg_rnip) throws Exception {
-		return ((ApplicationRequestI)this.connector).acceptApplication(application, requestGeneratorURI, rg_rsop, rg_rnip);
+		assert	owner != null && owner instanceof ApplicationRequestI ;
 	}
 
 	@Override

@@ -15,8 +15,6 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public interface ApplicationRequestI extends OfferedI,RequiredI{
-	public boolean acceptApplication(Integer application,
-			String requestGeneratorURI) throws Exception;
 
 	/**
 	 * Send a request generator to the controller
@@ -27,9 +25,7 @@ public interface ApplicationRequestI extends OfferedI,RequiredI{
 	 * @return boolean
 	 * @throws Exception
 	 */
-	public boolean acceptApplication(Integer application, String requestGeneratorURI, RequestSubmissionOutboundPort rg_rsop,
-			RequestNotificationInboundPort rg_rnip) throws Exception;
-
+	
 	boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop, String rg_rnip)
 			throws Exception;
 

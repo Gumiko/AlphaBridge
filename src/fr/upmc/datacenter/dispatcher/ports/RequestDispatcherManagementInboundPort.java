@@ -2,7 +2,7 @@ package fr.upmc.datacenter.dispatcher.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractInboundPort;
-import fr.upmc.datacenter.admissioncontroller.AdmissionController;
+import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 /**
  * The class <code>RequestDispatcherManagementInboundPort</code>
@@ -22,7 +22,7 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		{
 			super(RequestDispatcherManagementI.class, owner) ;
 
-			assert	owner != null && owner instanceof AdmissionController ;
+			assert	owner != null && owner instanceof RequestDispatcher ;
 		}
 
 		public				RequestDispatcherManagementInboundPort(
@@ -32,42 +32,25 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		{
 			super(uri, RequestDispatcherManagementI.class, owner);
 
-			assert	owner != null && owner instanceof AdmissionController ;
+			assert	owner != null && owner instanceof RequestDispatcher ;
 		}
 		/**
+		 * @throws Exception 
 		 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 		 */
 		@Override
-		public void deployVM(int rd, String RequestDispatcherURIDVM) {
-			final AdmissionController c = (AdmissionController) this.owner;
-			c.deployVM(rd, RequestDispatcherURIDVM);
-			
-		}
-		/**
-		 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#destroyVM(String uriComputerParent, String vm)
-		 */
-		@Override
-		public void destroyVM(String uriComputerParent, String vm) {
-			final AdmissionController c = (AdmissionController) this.owner;
-			c.destroyVM(uriComputerParent, vm);
-			
-		}
-		/**
-		 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#initVM(int application, String uriComputerParent, String vm)
-		 */
-		@Override
-		public void initVM(int application, String uriComputerParent, String vm) {
-			final AdmissionController c = (AdmissionController) this.owner;
-			c.initVM(application, uriComputerParent, vm);
+		public void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception {
+			final RequestDispatcher c = (RequestDispatcher) this.owner;
+			c.bindVM(id,str_rsop,str_rnip, str_avmmop);
 			
 		}
 		/**
 		 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#unbindVM(String uriComputerParent, String vm)
 		 */
 		@Override
-		public void unbindVM(String uriComputerParent, String vm) throws Exception {
-			final AdmissionController c = (AdmissionController) this.owner;
-			c.unbindVM(uriComputerParent, vm);
+		public void unbindVM(int id) throws Exception {
+			final RequestDispatcher c = (RequestDispatcher) this.owner;
+			c.unbindVM(id);
 			
 		}
 	}

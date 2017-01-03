@@ -29,7 +29,7 @@ import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
 import fr.upmc.datacenterclient.requestgenerator.connectors.RequestGeneratorManagementConnector;
 import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagementOutboundPort;
 
-public class TestController extends AbstractCVM{
+public class TestAdmissionController extends AbstractCVM{
 	public static final String	RequestSubmissionInboundPortURI = "rsibp" ;
 	public static final String	RequestSubmissionOutboundPortURI = "rsobp" ;
 
@@ -90,7 +90,7 @@ public class TestController extends AbstractCVM{
 	protected ControllerManagementOutboundPort cmop;
 
 
-	public TestController() throws Exception {
+	public TestAdmissionController() throws Exception {
 		super();
 	}
 
@@ -270,12 +270,12 @@ public class TestController extends AbstractCVM{
 		/* Send New Application to the Controller*/
 
 		Thread.sleep(2000L) ;
-		if(arop.acceptApplication(1, "rg1",rg_rsop,rg_rnip)){
+		if(arop.acceptApplication(1, "rg1","a1","b1")){
 			Thread.sleep(2000L) ;
 			rgmop.startGeneration();
 			Thread.sleep(5000L);
 		}
-		if(arop.acceptApplication(2, "rg2",rg_rsop2,rg_rnip2)){
+		if(arop.acceptApplication(2, "rg2","a2","b2")){
 			Thread.sleep(2000L) ;
 			rgmop2.startGeneration();
 		}
@@ -295,7 +295,7 @@ public class TestController extends AbstractCVM{
 		// Uncomment next line to execute components in debug mode.
 		// AbstractCVM.toggleDebugMode() ;
 		try {
-			final TestController tc = new TestController() ;
+			final TestAdmissionController tc = new TestAdmissionController() ;
 			// Deploy the components
 			tc.deploy() ;
 			System.out.println("starting.......") ;

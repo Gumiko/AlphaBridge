@@ -246,8 +246,8 @@ public class TestRequestDispatcher extends AbstractCVM{
 		RequestDispatcher rq = new RequestDispatcher(0);
 		rq.toggleTracing();
 		rq.toggleLogging();
-		rq.linkVM(0, vm,RequestSubmissionInboundPortURI,RequestNotificationOutboundPortURI);
-		rq.linkVM(1, vm2,RequestSubmissionInboundPortURI2,RequestNotificationOutboundPortURI2);
+		rq.linkVM(0);
+		rq.linkVM(1);
 		//RequestSubmissionInboundPortURI,
 		//RequestNotificationOutboundPortURI
 		

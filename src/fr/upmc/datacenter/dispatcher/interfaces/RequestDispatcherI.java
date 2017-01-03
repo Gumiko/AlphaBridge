@@ -21,7 +21,7 @@ public interface RequestDispatcherI extends OfferedI,RequiredI{
 	 * @param c_out			ComputerServicesOutboundPort of the computer.
 	 * @throws Exception
 	 */
-	public void linkRequestGenerator(RequestSubmissionOutboundPort rg_rsop,RequestNotificationInboundPort rg_rnip) throws Exception;
+	public void linkRequestGenerator(String rg_rsop,String rg_rnip) throws Exception;
 	/**
 	 * Link a Vm to the request Dispatcher
 	 * @param id			id of the VM.
@@ -30,5 +30,4 @@ public interface RequestDispatcherI extends OfferedI,RequiredI{
 	 * @param vm_rnop		vm request notification outbound port uri.
 	 * @throws Exception
 	 */
-	public void linkVM(int id,ApplicationVM vm,String vm_rsip,String vm_rnop)throws Exception;
 }

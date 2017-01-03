@@ -13,7 +13,7 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * @author	<a href="#">C�dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
-public interface ControllerManagementI extends OfferedI,RequiredI{
+public interface AdmissionControllerManagementI extends OfferedI,RequiredI{
 	
 	/**
 	 * add a computer which the controller will use to create new vm

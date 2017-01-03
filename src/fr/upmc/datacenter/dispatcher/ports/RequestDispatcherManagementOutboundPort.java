@@ -2,8 +2,7 @@ package fr.upmc.datacenter.dispatcher.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
-import fr.upmc.datacenter.admissioncontroller.AdmissionController;
-import fr.upmc.datacenter.admissioncontroller.interfaces.ControllerManagementI;
+import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
@@ -28,7 +27,7 @@ implements	RequestDispatcherManagementI{
 	{
 		super(RequestDispatcherManagementI.class, owner) ;
 
-		assert	owner != null && owner instanceof AdmissionController ;
+		assert	owner != null && owner instanceof Controller ;
 	}
 
 	public				RequestDispatcherManagementOutboundPort(
@@ -38,38 +37,23 @@ implements	RequestDispatcherManagementI{
 	{
 		super(uri, RequestDispatcherManagementI.class, owner);
 
-		assert	owner != null && owner instanceof AdmissionController ;
+		assert	owner != null && owner instanceof Controller ;
 	}
 	/**
+	 * @throws Exception 
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 	 */
 	@Override
-	public void deployVM(int rd, String RequestDispatcherURIDVM) {
-		((RequestDispatcherManagementI)this.connector).deployVM(rd, RequestDispatcherURIDVM);
+	public void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception {
+		((RequestDispatcherManagementI)this.connector).bindVM(id,str_rsop,str_rnip,str_avmmop);
 
 	}
-	/**
-	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#destroyVM(String uriComputerParent, String vm)
-	 */
-	@Override
-	public void destroyVM(String uriComputerParent, String vm) {
-		((RequestDispatcherManagementI)this.connector).destroyVM(uriComputerParent, vm);
 
-	}
-	/**
-	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#initVM(int application, String uriComputerParent, String vm)
-	 */
-	@Override
-	public void initVM(int application, String uriComputerParent, String vm) {
-		((RequestDispatcherManagementI)this.connector).initVM(application, uriComputerParent, vm);
-
-	}
 	/**
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#unbindVM(String uriComputerParent, String vm)
 	 */
 	@Override
-	public void unbindVM(String uriComputerParent, String vm) throws Exception {
-		((RequestDispatcherManagementI)this.connector).unbindVM(uriComputerParent, vm);
-
+	public void unbindVM(int id) throws Exception {
+		((RequestDispatcherManagementI)this.connector).unbindVM(id);
 	}
 }
