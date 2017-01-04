@@ -3,10 +3,9 @@ package fr.upmc.datacenter.extension.computer;
 import java.util.Map;
 import java.util.Set;
 
-import fr.upmc.datacenter.extension.vm.interfaces.ReservationI;
 import fr.upmc.datacenter.hardware.computers.Computer;
 
-public class ComputerExtended extends Computer implements ReservationI{
+public class ComputerExtended extends Computer{
 
 	public ComputerExtended(String computerURI, Set<Integer> possibleFrequencies, Map<Integer, Integer> processingPower,
 			int defaultFrequency, int maxFrequencyGap, int numberOfProcessors, int numberOfCores,

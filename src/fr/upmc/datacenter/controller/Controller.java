@@ -1,6 +1,7 @@
 package fr.upmc.datacenter.controller;
 
 import fr.upmc.components.AbstractComponent;
+import fr.upmc.data.StaticData;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.dispatcher.connectors.RequestDispatcherActuatorConnector;
 import fr.upmc.datacenter.dispatcher.connectors.RequestDispatcherManagementConnector;
@@ -36,6 +37,9 @@ implements RequestDispatcherSensorI{
 	 */
 	
 	int idVM=1;
+	
+	int waitingAllocation=0;
+	int waitingDisallow=0;
 	
 	public Controller(String controllerURI,String rddsdipURI,String rdmipURI, String rdaipURI) throws Exception{
 		this.controllerURI=controllerURI;
@@ -75,14 +79,61 @@ implements RequestDispatcherSensorI{
 				currentDynamicState.getTimeStamperId()) ;
 		System.out.print(  "  current idle status      : [") ;
 		
-		/*TODO 
-		 * Action with the data received (addCore ? RemoveCore ? AddVM ? removeVM ?)
-		 * 
-		 * rdaop.addCores(number ?);
-		 * 
-		 * */
 		
+		long time = currentDynamicState.getAverageTime();
+		processControl(time);
+	}
+	
+	private void processControl(long time) {
+		double factor=0;
+		METHOD method=METHOD.NORMAL;
+		if(isHigher(time)){
+			 factor = (time/StaticData.AVERAGE_TARGET);
+			 method=METHOD.HIGHER;
+		}
+		if(isLower(time)){
+			 factor = (StaticData.AVERAGE_TARGET/time);
+			 method=METHOD.LOWER;
+		}
+		if(method!=METHOD.NORMAL){
+			int cores = getNumberOfCoreAllocated();
+			if(method==METHOD.LOWER){
+				disallow((int)(cores-(cores/factor)));
+			}else{
+				allow((int)(cores*factor));
+			}
+		}
+	}
+
+
+	private void allow(int i) {
+		waitingAllocation=i;
 		
+	}
+
+
+	private void disallow(int i) {
+		waitingDisallow=i;
+		
+	}
+
+
+	private int getNumberOfCoreAllocated() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	public boolean isHigher(long time){
+		return (time > (StaticData.AVERAGE_TARGET*StaticData.PERCENT + StaticData.AVERAGE_TARGET));
+	}
+	
+	public boolean isLower(long time){
+		return (time < (StaticData.AVERAGE_TARGET*StaticData.PERCENT - StaticData.AVERAGE_TARGET));
+	}
+	
+	public enum METHOD{
+		LOWER,LOW,NORMAL,HIGH,HIGHER
 	}
 
 

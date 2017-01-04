@@ -12,10 +12,12 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 	protected final long timestamp;
 	/** IP of the node that did the timestamping.							*/
 	protected final String timestamperIP ;
+	protected final long averageTime;
 	
 	
-	public RequestDispatcherDynamicState() throws UnknownHostException{
+	public RequestDispatcherDynamicState(long averageTime) throws UnknownHostException{
 		super() ;
+		this.averageTime=averageTime;
 		this.timestamp = System.currentTimeMillis() ;
 		this.timestamperIP = InetAddress.getLocalHost().getHostAddress() ;
 	}
@@ -28,6 +30,11 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 	@Override
 	public String getTimeStamperId() {
 		return timestamperIP;
+	}
+	
+	@Override
+	public long getAverageTime() {
+		return averageTime;
 	}
 
 }

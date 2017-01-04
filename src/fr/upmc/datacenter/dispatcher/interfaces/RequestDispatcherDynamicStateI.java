@@ -7,5 +7,7 @@ import fr.upmc.datacenter.interfaces.TimeStampingI;
 public interface RequestDispatcherDynamicStateI extends 	DataOfferedI.DataI,
 DataRequiredI.DataI,
 TimeStampingI{
+
+	long getAverageTime();
 	
 }
