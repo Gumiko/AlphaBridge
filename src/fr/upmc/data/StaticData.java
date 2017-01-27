@@ -5,4 +5,6 @@ public class StaticData {
 	public static long AVERAGE_TARGET=1000;
 	/*Percent that is acceptable, near the Average Target */
 	public static double PERCENT=0.2;
+	
+	public static int RING_PUSH_INTERVAL=3000;
 }

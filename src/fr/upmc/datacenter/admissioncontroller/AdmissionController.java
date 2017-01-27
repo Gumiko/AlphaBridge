@@ -41,6 +41,8 @@ implements ApplicationRequestI,AdmissionControllerManagementI
 {
 
 	public static final String CONTROLLER_PREFIX = "CO_";
+	public static final String C_DSDIP_PREFIX = "C_DSDIP";
+	
 	public static final String RD_PREFIX = "RD_";
 	public static final String RD_MIP_PREFIX = "RD_MIP";
 	public static final String RD_AIP_PREFIX = "RD_AIP";
@@ -158,7 +160,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI
 					
 					rd.linkRequestGenerator(rg_rsop, rg_rnip);
 					
-					Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+CO_ID,RD_MIP_PREFIX+CO_ID,RD_AIP_PREFIX+CO_ID);
+					Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+CO_ID,RD_MIP_PREFIX+CO_ID,RD_AIP_PREFIX+CO_ID,CO_ID);
 					
 					RD_ID++;
 					APP_ID++;
