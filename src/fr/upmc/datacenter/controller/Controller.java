@@ -1,5 +1,11 @@
 package fr.upmc.datacenter.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import fr.upmc.components.AbstractComponent;
 import fr.upmc.data.StaticData;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
@@ -11,9 +17,19 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherStaticStateI;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherActuatorOutboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementOutboundPort;
+import fr.upmc.datacenter.extension.vm.VMData;
+import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
+import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
+import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
+import fr.upmc.datacenter.hardware.processors.interfaces.ProcessorManagementI;
+import fr.upmc.datacenter.hardware.processors.ports.ProcessorIntrospectionOutboundPort;
+import fr.upmc.datacenter.hardware.processors.ports.ProcessorManagementOutboundPort;
+import fr.upmc.datacenter.ring.interfaces.RingDataI;
+import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
+import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
 
 public class Controller extends AbstractComponent
-implements RequestDispatcherSensorI{
+implements RequestDispatcherSensorI,RingDataI{
 
 	
 	/** ports of the controller receiving the dynamic data from its processor
@@ -30,6 +46,15 @@ implements RequestDispatcherSensorI{
 	RequestDispatcherManagementOutboundPort rdmop;
 	RequestDispatcherActuatorOutboundPort rdaop;
 	
+	Map<Integer,ApplicationVMManagementOutboundPort> mapVMManagement;
+	Map<Integer,VMExtendedManagementOutboundPort> mapVMEManagement;
+	
+	List<AllocatedCore> acReserved;
+	//List<VMData> vmReserved;
+	
+	List<AllocatedCore> acFree;
+	//List<VMData> vmFree;
+	
 	/*
 	 *  ControllerRingDataInboundPort crdip;
 	 *  ControllerRingDataOutboundPort crdop;
@@ -39,9 +64,16 @@ implements RequestDispatcherSensorI{
 	int idVM=1;
 	
 	int waitingAllocation=0;
-	int waitingDisallow=0;
+	int waitingDisallocation=0;
 	
 	public Controller(String controllerURI,String rddsdipURI,String rdmipURI, String rdaipURI) throws Exception{
+		
+		mapVMManagement=new HashMap<Integer,ApplicationVMManagementOutboundPort>();
+		mapVMEManagement=new HashMap<Integer,VMExtendedManagementOutboundPort>();
+		
+		acReserved = new ArrayList<AllocatedCore>();
+		acFree=new ArrayList<AllocatedCore>();
+		
 		this.controllerURI=controllerURI;
 		/*Link the controller to the Request Dispatcher */
 		rdmop=new RequestDispatcherManagementOutboundPort(this);
@@ -98,22 +130,52 @@ implements RequestDispatcherSensorI{
 		if(method!=METHOD.NORMAL){
 			int cores = getNumberOfCoreAllocated();
 			if(method==METHOD.LOWER){
-				disallow((int)(cores-(cores/factor)));
+				disallocate(Math.max(1, (int)(cores-(cores/factor))));
 			}else{
-				allow((int)(cores*factor));
+				allocate(Math.max(1, (int)(cores*factor)));
 			}
 		}
 	}
+	
+	public void raiseFrequency(int nbCore,int id) throws Exception{
+		
+		ApplicationVMManagementOutboundPort freqVMM=this.mapVMManagement.get(id);
+		VMExtendedManagementOutboundPort freqVMEM=this.mapVMEManagement.get(id);
+		
+		VMData d=freqVMEM.getData();
+		
+		ProcessorManagementOutboundPort pmop=new ProcessorManagementOutboundPort(this);
+		ProcessorIntrospectionOutboundPort piop=new ProcessorIntrospectionOutboundPort(this);
+		
+		for(int i=0;i<nbCore;i++){
+			for(Entry<String, Map<ProcessorPortTypes, String>> e : d.getProc().entrySet()){
+				pmop.doConnection(e.getValue().get(ProcessorPortTypes.MANAGEMENT), ProcessorManagementI.class.getCanonicalName());
+				piop.doConnection(e.getValue().get(ProcessorPortTypes.INTROSPECTION), ProcessorManagementI.class.getCanonicalName());
+				
+
+				//pmop.setCoreFrequency(coreNo, frequency);
+			}
+		
+		
+		}
+		
+		
+		
+	}
+	
+	public void lowerFrequency(int nbCore){
+		
+	}
 
 
-	private void allow(int i) {
+	private void allocate(int i) {
 		waitingAllocation=i;
 		
 	}
 
 
-	private void disallow(int i) {
-		waitingDisallow=i;
+	private void disallocate(int i) {
+		waitingDisallocation=i;
 		
 	}
 
@@ -134,6 +196,23 @@ implements RequestDispatcherSensorI{
 	
 	public enum METHOD{
 		LOWER,LOW,NORMAL,HIGH,HIGHER
+	}
+
+	@Override
+	public void acceptRingDynamicData(String requestDispatcherURI, RingDynamicStateI currentDynamicState)
+			throws Exception {
+		
+		if(waitingAllocation>0){
+			
+		}
+		/*TODO*/
+		/*
+		 * 
+		 * 
+		 * currentDynamicState.getVMDatas();
+		 * 
+		 */
+		
 	}
 
 

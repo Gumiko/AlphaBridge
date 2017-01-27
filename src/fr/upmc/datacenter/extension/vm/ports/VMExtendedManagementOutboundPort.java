@@ -3,6 +3,7 @@ package fr.upmc.datacenter.extension.vm.ports;
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
 import fr.upmc.datacenter.controller.Controller;
+import fr.upmc.datacenter.extension.vm.VMData;
 import fr.upmc.datacenter.extension.vm.interfaces.VMExtendedManagementI;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 
@@ -43,6 +44,11 @@ implements	VMExtendedManagementI{
 	@Override
 	public AllocatedCore[] removeAll() {
 		 return ((VMExtendedManagementI)this.connector).removeAll();
+	}
+
+	@Override
+	public VMData getData() throws Exception {
+		return ((VMExtendedManagementI)this.connector).getData();
 	}
 
 }

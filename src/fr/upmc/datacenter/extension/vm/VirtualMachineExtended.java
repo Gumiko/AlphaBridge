@@ -1,18 +1,41 @@
 package fr.upmc.datacenter.extension.vm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import fr.upmc.datacenter.extension.vm.interfaces.VMExtendedManagementI;
+import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementInboundPort;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
+import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
+import fr.upmc.datacenter.hardware.processors.ports.ProcessorServicesOutboundPort;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 
-public class VirtualMachineExtended extends ApplicationVM{
-
+public class VirtualMachineExtended extends ApplicationVM implements VMExtendedManagementI{
+	protected VMExtendedManagementInboundPort vmemip;
 	public VirtualMachineExtended(String vmURI, String applicationVMManagementInboundPortURI,
 			String requestSubmissionInboundPortURI, String requestNotificationOutboundPortURI) throws Exception {
 		super(vmURI, applicationVMManagementInboundPortURI, requestSubmissionInboundPortURI,
 				requestNotificationOutboundPortURI);
+		vmemip=new VMExtendedManagementInboundPort(this);
+		this.addPort(vmemip);
+	}
+	
+	public VMData getData() throws Exception{
+		int c= this.allocatedCoresIdleStatus.size();
+		Map<String, ProcessorServicesOutboundPort> x=this.processorServicesPorts;
+		
+		Map<String,Map<ProcessorPortTypes,String>> proc=new HashMap<String,Map<ProcessorPortTypes,String>>();
+//		for(Entry<String,ProcessorServicesOutboundPort> e: x.entrySet()){
+//			proc.put(e.getKey(), e.getValue().getClientPortURI());
+//			
+//		}
+		for(AllocatedCore ac: this.allocatedCoresIdleStatus.keySet()){
+			proc.put(ac.processorURI, ac.processorInboundPortURI);
+		}
+		return new VMData(c,proc,this.applicationVMManagementInboundPort.getPortURI(),this.vmemip.getPortURI());
 	}
 
 	public AllocatedCore[] removeCore(int number){
