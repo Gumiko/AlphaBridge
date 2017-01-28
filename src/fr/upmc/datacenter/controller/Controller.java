@@ -81,6 +81,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	protected ScheduledFuture<?>			pushingFuture ;
 
 	public Controller(String controllerURI,String rddsdipURI,String rdmipURI, String rdaipURI,int controllerID) throws Exception{
+		super(1, 1) ;
 		this.controllerID=controllerID;
 		mapVMManagement=new HashMap<Integer,ApplicationVMManagementOutboundPort>();
 		mapVMEManagement=new HashMap<Integer,VMExtendedManagementOutboundPort>();
@@ -94,6 +95,8 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		this.controllerURI=controllerURI;
 		/*Link the controller to the Request Dispatcher */
 		rdmop=new RequestDispatcherManagementOutboundPort(this);
+		this.addPort(rdmop);
+		rdmop.publishPort();
 		rdmop.doConnection(rdmipURI, RequestDispatcherManagementConnector.class.getCanonicalName());
 
 		rdaop=new RequestDispatcherActuatorOutboundPort(this);
@@ -107,9 +110,6 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		rddsdop.publishPort();
 		rddsdop.doConnection(rddsdipURI,ControlledDataConnector.class.getCanonicalName());
 
-		//rdmop.addVM(int id,String a,String b,String c);
-		//rdmop.bindVM(id, str_rsop, str_rnip, str_avmmop);
-
 		/*Dynamic data sending to the controller */
 
 		rdsdop = new RingDynamicStateDataOutboundPort(this,controllerURI);
@@ -118,9 +118,9 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		this.addPort(rdsdip) ;
 		this.rdsdip.publishPort();
 		
+		this.toggleLogging();
+		this.toggleTracing();
 		
-		
-		//rddsdop.startUnlimitedPushing(5000);
 	}
 
 
@@ -137,20 +137,12 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		assert	requestDispatcherURI != null ;
 		assert	currentDynamicState != null ;
 
-		System.out.println("Controller " + this.controllerURI +
-				" accepting dynamic data from " + requestDispatcherURI) ;
-		System.out.println("  timestamp                : " +
-				currentDynamicState.getTimeStamp()) ;
-		System.out.println("  timestamper id           : " +
-				currentDynamicState.getTimeStamperId()) ;
-		System.out.print(  "  current idle status      : [") ;
-
-
 		long time = currentDynamicState.getAverageTime();
 		processControl(time);
 	}
 
 	private void processControl(long time) {
+		this.logMessage("    /!\\ CONTROL : "+this.controllerURI+ " receiving average time :"+time);
 		double factor=0;
 		METHOD method=METHOD.NORMAL;
 		if(isHigher(time)){

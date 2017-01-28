@@ -37,10 +37,11 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 public class RequestDispatcher extends AbstractComponent
 implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHandlerI,RequestNotificationHandlerI,PushModeControllerI
 {
+	
 
 	//	/** RequestDispatcher data inbound port through which it pushes its static data.	*/
 	//	protected RequestDispatcherStaticStateDataInboundPort
-	//											requestDispatcherStaticStateDataInboundPort ;
+	//				requestDispatcherStaticStateDataInboundPort ;
 	/** RequestDispatcher data inbound port through which it pushes its dynamic data.	*/
 	protected RequestDispatcherDynamicStateDataInboundPort rddsdip ;
 	protected RequestDispatcherActuatorInboundPort rdaip;
@@ -84,12 +85,9 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	int totalTime;
 	int averageTime;
 	
-
-	// requestDispatcherActuatorInboundPort
-	// requestDispatcherDynamicStateDataInboundPort
-	// requestDispatcherManagementInboundPort
 	public RequestDispatcher(int id, String rdURI,String requestDispatcherRequestSubmissionInboundPortURI,String requestDispatcherActuatorInboundPort,String requestDispatcherDynamicStateDataInboundPort,String requestDispatcherManagementInboundPort) throws Exception{
 		/* Init Request Dispatcher */
+		super(1, 1) ;
 		this.id=id;
 		this.idVM=0;
 		this.rdUri=rdURI;
@@ -197,6 +195,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void startUnlimitedPushing(int interval) throws Exception {
 		// first, send the static state if the corresponding port is connected
 		//this.sendStaticState() ;
+		this.logMessage("Starting pushing Data");
 		final RequestDispatcher c = this ;
 		this.pushingFuture =
 				this.scheduleTaskAtFixedRate(
@@ -240,7 +239,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	public void			sendDynamicState() throws Exception
 	{
-		if (this.rddsdip.connected()) {
+		if (this.rddsdip.connected() && numberOfRequests>0) {
 			RequestDispatcherDynamicStateI rdds = this.getDynamicState() ;
 			this.rddsdip.send(rdds) ;
 		}
@@ -281,8 +280,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 
 	public RequestDispatcherDynamicStateI getDynamicState() throws UnknownHostException {
-		RequestDispatcherDynamicState rdds=new RequestDispatcherDynamicState(this.averageTime);
-		return rdds;
+		long average = (totalTime/numberOfRequests);
+		return new RequestDispatcherDynamicState(average);
 	}
 
 
@@ -310,7 +309,11 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		endTime.put(r.getRequestURI(), System.currentTimeMillis());
 		lastTime.put(r.getRequestURI(), endTime.get(r.getRequestURI())-startTime.get(r.getRequestURI()));
 		totalTime+=lastTime.get(r.getRequestURI());
+		numberOfRequests++;
 	}
 
+	public long getAverageTime(){
+		return totalTime/numberOfRequests;
+	}
 
 }
