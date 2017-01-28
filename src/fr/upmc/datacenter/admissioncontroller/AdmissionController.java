@@ -188,26 +188,22 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 
 	@Override
-	public boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop,String rg_rnip) throws Exception {
+	public boolean acceptApplication(Integer application, String requestGeneratorURI, String requestDispatcherRequestSubmissionInboundPortURI,String requestGeneratorRequestNotificationInboundPort) throws Exception {
 		if(Reserved.size()>=3){
 			this.logMessage("New Application : "+application+" from ["+requestGeneratorURI+"]");
 			/*Creation of the RequestDispatcher*/
-			RequestDispatcher rd=new RequestDispatcher(RD_ID,RD_PREFIX+RD_ID);
+			RequestDispatcher rd=new RequestDispatcher(RD_ID,RD_PREFIX+RD_ID,requestDispatcherRequestSubmissionInboundPortURI, RD_AIP_PREFIX+RD_ID, RD_DSDIP_PREFIX+RD_ID, RD_MIP_PREFIX+RD_ID);
 			this.logMessage("Controller : RD["+RD_ID+"] created");
 			rd.toggleLogging();
 			rd.toggleTracing();
 
-			rd.linkRequestGenerator(rg_rsop, rg_rnip);
+			rd.linkRequestGenerator(requestGeneratorRequestNotificationInboundPort);
 
 			VMData temp=Reserved.remove(0);
-			ApplicationVMIntrospectionOutboundPort p=new ApplicationVMIntrospectionOutboundPort(this);
-			p.doConnection(temp.getVMIntrospection(),ApplicationVMIntrospectionConnector.class.getCanonicalName());
-			
-			Map<ApplicationVMPortTypes, String> e=p.getAVMPortsURI();
-			
 				
-			rd.bindVM(1, e.get(ApplicationVMPortTypes.REQUEST_SUBMISSION),e.get(ApplicationVMPortTypes.MANAGEMENT),temp.getVMEManagement());
-			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+CO_ID,RD_MIP_PREFIX+CO_ID,RD_AIP_PREFIX+CO_ID,CO_ID);
+			rd.bindVM(1, temp.getVMRequestSubmission(),temp.getVMManagement(),temp.getVMEManagement());
+			
+			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+RD_ID,RD_MIP_PREFIX+RD_ID,RD_AIP_PREFIX+RD_ID,CO_ID);
 
 			RD_ID++;
 			APP_ID++;
@@ -221,7 +217,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 	public void linkComputer(String computerURI,String computerServicesInboundPortURI,String computerStaticStateDataInboundPortURI,
 			String computerDynamicStateDataInboundPortURI) throws Exception {
-		this.logMessage("Linking Computer "+computerURI+" to :"+this.admissionControllerURI);
+		this.logMessage(" --/!\\-- Linking Computer "+computerURI+" to :"+this.admissionControllerURI);
 		this.logMessage("Ports : "+computerServicesInboundPortURI+" | "+ computerStaticStateDataInboundPortURI+" | "+computerDynamicStateDataInboundPortURI);
 		/*Services*/
 		ComputerServicesOutboundPort csPort = new ComputerServicesOutboundPort(this) ;
@@ -274,6 +270,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		this.logMessage("Free VM : "+Free.size());
 
 		this.logMessage("Computer linked !");
+		this.logMessage("------------------------------");
 		VM_ID++;
 		COMP_ID++;
 	}
