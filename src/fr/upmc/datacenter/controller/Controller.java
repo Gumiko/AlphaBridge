@@ -87,6 +87,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 
 		vmReserved = new ArrayList<VMData>();
 		vmFree = new ArrayList<VMData>();
+		
 		acReserved = new ArrayList<AllocatedCore>();
 		acFree=new ArrayList<AllocatedCore>();
 

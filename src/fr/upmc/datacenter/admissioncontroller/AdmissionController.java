@@ -7,11 +7,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import fr.upmc.components.AbstractComponent;
+import fr.upmc.components.connectors.DataConnector;
+import fr.upmc.components.interfaces.DataRequiredI;
 import fr.upmc.datacenter.admissioncontroller.factory.VMFactory;
 import fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI;
 import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerI;
 import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestInboundPort;
+import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.admissioncontroller.ports.AdmissionControllerManagementInboundPort;
 import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
@@ -115,6 +118,10 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 	public AdmissionController(String admissionControllerURI,String applicationRequestInboundURI) throws Exception{
 		/* TODO */
 
+		this.toggleLogging();
+		this.toggleTracing();
+		this.addOfferedInterface(DataRequiredI.PushI.class) ;
+		this.addRequiredInterface(DataRequiredI.PullI.class) ;
 		this.admissionControllerURI=admissionControllerURI;
 		/*Initialize Request Dispatchers Mapping*/
 		applicationURI=new HashMap<Integer,String>();
@@ -143,7 +150,8 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 	public AdmissionController(String admissionControllerURI,String applicationRequestInboundURI,String admissionControllerManagementInboundURI) throws Exception{
 		/* TODO */
-
+		this.toggleLogging();
+		this.toggleTracing();
 		this.admissionControllerURI=admissionControllerURI;
 		/*Initialize Request Dispatchers Mapping*/
 		applicationURI=new HashMap<Integer,String>();
@@ -198,7 +206,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 			Map<ApplicationVMPortTypes, String> e=p.getAVMPortsURI();
 			
 				
-			rd.bindVM(1, e.get(ApplicationVMPortTypes.REQUEST_SUBMISSION),e.get(ApplicationVMPortTypes.MANAGEMENT));
+			rd.bindVM(1, e.get(ApplicationVMPortTypes.REQUEST_SUBMISSION),e.get(ApplicationVMPortTypes.MANAGEMENT),temp.getVMEManagement());
 			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+CO_ID,RD_MIP_PREFIX+CO_ID,RD_AIP_PREFIX+CO_ID,CO_ID);
 
 			RD_ID++;
@@ -211,14 +219,15 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		return false;
 	}
 
-	public void linkComputer(String computerURI,String ComputerServicesInbountPortURI,String ComputerStaticStateDataInboundPortURI,
-			String ComputerDynamicStateDataInboundPortURI) throws Exception {
-		this.logMessage("Linking Computer to :"+this.admissionControllerURI);
+	public void linkComputer(String computerURI,String computerServicesInboundPortURI,String computerStaticStateDataInboundPortURI,
+			String computerDynamicStateDataInboundPortURI) throws Exception {
+		this.logMessage("Linking Computer "+computerURI+" to :"+this.admissionControllerURI);
+		this.logMessage("Ports : "+computerServicesInboundPortURI+" | "+ computerStaticStateDataInboundPortURI+" | "+computerDynamicStateDataInboundPortURI);
 		/*Services*/
 		ComputerServicesOutboundPort csPort = new ComputerServicesOutboundPort(this) ;
 		csPort.publishPort() ;
 		csPort.doConnection(
-				ComputerServicesInbountPortURI,
+				computerServicesInboundPortURI,
 				ComputerServicesConnector.class.getCanonicalName()) ;
 		computerServicesPorts.put(COMP_ID,csPort);
 		/*DynamicData & Static Data*/
@@ -228,21 +237,27 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 				computerURI) ;
 		this.addPort(cssPort) ;
 		cssPort.publishPort() ;
-
+		cssPort.doConnection(computerStaticStateDataInboundPortURI, DataConnector.class.getCanonicalName());
+		
+		/**/
 		ComputerDynamicStateDataOutboundPort cdsPort = new ComputerDynamicStateDataOutboundPort(
 				COMPUTER_DYNAMIC_DATA_PREFIX+COMP_ID,
 				this,
 				computerURI) ;
 		this.addPort(cdsPort) ;
 		cdsPort.publishPort() ;
+		cdsPort.doConnection(computerDynamicStateDataInboundPortURI, ControlledDataConnector.class.getCanonicalName());
+		
 
 		computerDynamicData.put(COMP_ID,cdsPort);
 		computerStaticData.put(COMP_ID,cssPort);
 		/*Creating Inital VM*/
+		
 		ComputerStaticStateI staticState= (ComputerStaticStateI) cssPort.request();
 		int nbCores =staticState.getNumberOfCoresPerProcessor();
 		int nbProc = staticState.getNumberOfProcessors();
-
+		this.logMessage("Computer : "+nbCores+" Cores & "+nbProc+" Processor");
+		this.logMessage("Creating "+((nbCores*nbProc)/2)+" VM with "+PARAMETER_INITIAL_NB_CORE+" cores");
 		for(int i=0;i<(nbCores*nbProc)/2;i++){
 			AllocatedCore[] acs=csPort.allocateCores(PARAMETER_INITIAL_NB_CORE);
 			if(acs.length!=0){
@@ -254,7 +269,9 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 					Free.add(vme.getData());
 			}
 		}
-
+		
+		this.logMessage("Reserved VM : "+Reserved.size());
+		this.logMessage("Free VM : "+Free.size());
 
 		this.logMessage("Computer linked !");
 		VM_ID++;

@@ -16,6 +16,7 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementInboundPort;
+import fr.upmc.datacenter.extension.vm.connectors.VMExtendedManagementConnector;
 import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
@@ -128,12 +129,12 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	}
 
 	@Override
-	public void bindVM(int id,String requestSubmissionOutboundPortURI,String applicationVMManagementOutboundPortURI) throws Exception {
+	public void bindVM(int id,String requestSubmissionOutboundPortURI,String applicationVMManagementOutboundPortURI,String VMExtendedManagementOutboundPortURI) throws Exception {
 		this.logMessage("VM"+id+" : Linking...");
 		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(requestSubmissionOutboundPortURI, this);
 		//RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(str_rnip, this);
 		ApplicationVMManagementOutboundPort avmmop=new ApplicationVMManagementOutboundPort(this);
-
+		VMExtendedManagementOutboundPort vmemop=new VMExtendedManagementOutboundPort(this);
 		this.addPort(rsopvm);
 		//this.addPort(rnipvm);
 
@@ -145,7 +146,9 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 		avmmop.doConnection(applicationVMManagementOutboundPortURI, ApplicationVMManagementConnector.class.getCanonicalName());
 		avmmops.put(id, avmmop);
-
+		
+		vmemop.doConnection(VMExtendedManagementOutboundPortURI, VMExtendedManagementConnector.class.getCanonicalName());
+		vmemops.put(id, vmemop);
 		this.logMessage("VM"+id+" : Linked !");
 	}
 
