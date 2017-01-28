@@ -44,8 +44,8 @@ implements	RequestDispatcherManagementI{
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 	 */
 	@Override
-	public void bindVM(int id, String str_rsop, String str_avmmop,String VMExtendedManagementOutboundPortURI) throws Exception {
-		((RequestDispatcherManagementI)this.connector).bindVM(id,str_rsop,str_avmmop, VMExtendedManagementOutboundPortURI);
+	public void bindVM(String vmUri, String str_rsop, String str_avmmop,String VMExtendedManagementOutboundPortURI) throws Exception {
+		((RequestDispatcherManagementI)this.connector).bindVM(vmUri,str_rsop,str_avmmop, VMExtendedManagementOutboundPortURI);
 
 	}
 
@@ -53,7 +53,7 @@ implements	RequestDispatcherManagementI{
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#unbindVM(String uriComputerParent, String vm)
 	 */
 	@Override
-	public void unbindVM(int id) throws Exception {
-		((RequestDispatcherManagementI)this.connector).unbindVM(id);
+	public void unbindVM(String vmUri) throws Exception {
+		((RequestDispatcherManagementI)this.connector).unbindVM(vmUri);
 	}
 }

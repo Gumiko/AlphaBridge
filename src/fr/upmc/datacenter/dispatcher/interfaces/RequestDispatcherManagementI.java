@@ -20,7 +20,7 @@ public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	 * @param RequestDispatcherURIDVM uri of the vm.
 	 * @throws Exception
 	 */
-	public void bindVM(int id, String str_rsop, String str_avmmop,String VMExtendedManagementOutboundPortURI) throws Exception;
+	public void bindVM(String vmUri, String str_rsop, String str_avmmop,String VMExtendedManagementOutboundPortURI) throws Exception;
 
 	/**
 	 * take back a vm of the request dispatcher
@@ -28,6 +28,6 @@ public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	 * @param vm Uri of the vm.
 	 * @throws Exception
 	 */
-	public void unbindVM(int id) throws Exception;
+	public void unbindVM(String vmUri) throws Exception;
 	
 }

@@ -201,7 +201,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 			VMData temp=Reserved.remove(0);
 
-			rd.bindVM(1, temp.getVMRequestSubmission(),temp.getVMManagement(),temp.getVMEManagement());
+			rd.bindVM(temp.getVMUri(), temp.getVMRequestSubmission(),temp.getVMManagement(),temp.getVMEManagement());
 
 			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+RD_ID,RD_MIP_PREFIX+RD_ID,RD_AIP_PREFIX+RD_ID,CO_ID);
 
@@ -219,6 +219,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 			this.logMessage("-------------------------------------------");
 			return true;
 		}
+		this.logMessage("Refusing Application...");
 		return false;
 	}
 

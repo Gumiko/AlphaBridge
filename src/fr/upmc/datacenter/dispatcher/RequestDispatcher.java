@@ -1,8 +1,11 @@
 package fr.upmc.datacenter.dispatcher;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -53,10 +56,10 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	public static final String DYNAMIC_DATA_URI="RequestDispatcherDD";
 
-	protected String RDuri;
+	protected String rdUri;
 	protected int idVM;
 	protected int id;
-	int lastVM;
+	
 	
 	protected int notificationid;
 
@@ -64,12 +67,14 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	protected RequestNotificationOutboundPort rnop;
 	protected RequestDispatcherManagementInboundPort rdmip;
 
-	protected Map<Integer,RequestSubmissionOutboundPort> rsop;
-	protected Map<Integer,RequestNotificationInboundPort> rnip;
-	
-	protected Map<Integer,ApplicationVMManagementOutboundPort> avmmops;
-	protected Map<Integer,VMExtendedManagementOutboundPort> vmemops;
+	protected Map<String,RequestSubmissionOutboundPort> rsop;
+	protected Map<String,RequestNotificationInboundPort> rnip;
+	protected Map<String,ApplicationVMManagementOutboundPort> avmmops;
+	protected Map<String,VMExtendedManagementOutboundPort> vmemops;
 
+	int lastVM;
+	private ArrayList<RequestSubmissionOutboundPort> vms;
+	
 	/* Data Management */
 	Map<String,Long> startTime=new HashMap<String,Long>();
 	Map<String,Long> endTime=new HashMap<String,Long>();
@@ -78,20 +83,23 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	int numberOfRequests;
 	int totalTime;
 	int averageTime;
+	
 
 	// requestDispatcherActuatorInboundPort
 	// requestDispatcherDynamicStateDataInboundPort
 	// requestDispatcherManagementInboundPort
-	public RequestDispatcher(int id, String controllerURi,String requestDispatcherRequestSubmissionInboundPortURI,String requestDispatcherActuatorInboundPort,String requestDispatcherDynamicStateDataInboundPort,String requestDispatcherManagementInboundPort) throws Exception{
+	public RequestDispatcher(int id, String rdURI,String requestDispatcherRequestSubmissionInboundPortURI,String requestDispatcherActuatorInboundPort,String requestDispatcherDynamicStateDataInboundPort,String requestDispatcherManagementInboundPort) throws Exception{
 		/* Init Request Dispatcher */
 		this.id=id;
 		this.idVM=0;
-		this.RDuri="Dispatcher"+id;
+		this.rdUri=rdURI;
 		this.lastVM=0;
 		this.notificationid=0;
-		this.rsop=new HashMap<Integer,RequestSubmissionOutboundPort>();
-		this.rnip=new HashMap<Integer,RequestNotificationInboundPort>();
-
+		this.rsop=new HashMap<String,RequestSubmissionOutboundPort>();
+		this.rnip=new HashMap<String,RequestNotificationInboundPort>();
+		this.avmmops = new HashMap<String,ApplicationVMManagementOutboundPort> ();
+		this.vmemops = new HashMap<String,VMExtendedManagementOutboundPort> ();
+		
 		/*RD Ports connection with RG*/
 		this.addOfferedInterface(RequestSubmissionI.class);
 		this.rsip = new RequestSubmissionInboundPort(requestDispatcherRequestSubmissionInboundPortURI, this);
@@ -99,7 +107,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.rsip.publishPort();
 
 		this.addRequiredInterface(RequestNotificationI.class);
-		this.rnop=new RequestNotificationOutboundPort(REQ_NOT_OUT+id, this);
+		this.rnop=new RequestNotificationOutboundPort(this);
 		this.addPort(rnop);
 		this.rnop.publishPort();
 
@@ -120,8 +128,6 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.addPort(rdmip);
 		this.rdmip.publishPort();
 	
-		this.avmmops = new HashMap<Integer,ApplicationVMManagementOutboundPort> ();
-		this.vmemops = new HashMap<Integer,VMExtendedManagementOutboundPort> ();
 		/*Test*/
 		//this.addRequiredInterface(RequestSubmissionI.class);
 		//this.addOfferedInterface(RequestNotificationI.class);
@@ -135,16 +141,14 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	}
 
 	@Override
-	public void bindVM(int id,String vmRequestSubmissionInboundPortURI,String applicationVMManagementInboundPortURI,String VMExtendedManagementInboundPortURI) throws Exception {
+	public void bindVM(String vmUri,String vmRequestSubmissionInboundPortURI,String applicationVMManagementInboundPortURI,String VMExtendedManagementInboundPortURI) throws Exception {
 		this.logMessage("VM"+id+" : Linking...");
-		String notificationURI=RDuri+"NOTIF"+(notificationid++);
+		String notificationURI=rdUri+"NOTIF"+(notificationid++);
 		
 		VMExtendedManagementOutboundPort vmemop=new VMExtendedManagementOutboundPort(this);
 		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(this);
 		ApplicationVMManagementOutboundPort avmmop=new ApplicationVMManagementOutboundPort(this);
 		RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(notificationURI,this);
-		
-		
 		
 		this.addPort(vmemop);
 		this.addPort(rsopvm);
@@ -162,25 +166,29 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		
 		vmemop.connectNotificationPort(notificationURI);
 		
-		rsop.put(id, rsopvm);
-		avmmops.put(id, avmmop);
-		vmemops.put(id, vmemop);
-		rnip.put(id, rnipvm);
+		rsop.put(vmUri, rsopvm);
+		avmmops.put(vmUri, avmmop);
+		vmemops.put(vmUri, vmemop);
+		rnip.put(vmUri, rnipvm);
+		
+		vms=new ArrayList<>(rsop.values());
 		
 		this.logMessage("VM"+id+" : Linked !");
 	}
 
 
 	@Override
-	public void unbindVM(int id) throws Exception {
-		rsop.get(id).doDisconnection();
-		rsop.remove(id);
-		rnip.get(id).doDisconnection();
-		rnip.remove(id);
-		avmmops.get(id).doDisconnection();
-		avmmops.remove(id);
-		vmemops.get(id).doDisconnection();
-		vmemops.remove(id);
+	public void unbindVM(String vmUri) throws Exception {
+		rsop.get(vmUri).doDisconnection();
+		rsop.remove(vmUri);
+		rnip.get(vmUri).doDisconnection();
+		rnip.remove(vmUri);
+		avmmops.get(vmUri).doDisconnection();
+		avmmops.remove(vmUri);
+		vmemops.get(vmUri).doDisconnection();
+		vmemops.remove(vmUri);
+		
+		vms=new ArrayList<>(rsop.values());
 	}
 
 	
@@ -208,7 +216,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	@Override
 	public void startLimitedPushing(final int interval, final int n) throws Exception {
 		assert	n > 0 ;
-		this.logMessage(this.RDuri + " startLimitedPushing with interval "
+		this.logMessage(this.rdUri + " startLimitedPushing with interval "
 				+ interval + " ms for " + n + " times.") ;
 
 		// first, send the static state if the corresponding port is connected
@@ -281,17 +289,18 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void	acceptRequestSubmission(final RequestI r)
 			throws Exception
 	{
-		this.logMessage("Dispatcher["+id+"] : "+r.getRequestURI() +" => "+rsop.get(lastVM).getPortURI());
-		rsop.get(lastVM).submitRequest(r);
-		lastVM=(++lastVM)%rsop.keySet().size();
+		
+		this.logMessage("Dispatcher["+id+"] : "+r.getRequestURI() +" => "+vms.get(lastVM).getPortURI());
+		vms.get(lastVM).submitRequest(r);
+		lastVM=(++lastVM)%vms.size();
 	}
 
 	public void	acceptRequestSubmissionAndNotify(final RequestI r) throws Exception
 	{
-		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" ==> "+rsop.get(lastVM).getPortURI());
-		rsop.get(lastVM).submitRequestAndNotify(r);
+		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" =====> "+vms.get(lastVM).getPortURI());
+		vms.get(lastVM).submitRequestAndNotify(r);
 		startTime.put(r.getRequestURI(), System.currentTimeMillis());
-		lastVM=(++lastVM)%rsop.keySet().size();
+		lastVM=(++lastVM)%vms.size();
 	}
 
 	@Override
