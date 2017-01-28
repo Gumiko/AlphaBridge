@@ -12,7 +12,7 @@ import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
+ * @author	Cédric Ribeiro et Mokrane Kadri
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public class VMFactory{
@@ -26,7 +26,7 @@ public class VMFactory{
 	 * @param number			number of vm wanted.
 	 * @param inboundPortURI	inboundPortURI.
 	 * @return Map containing each vm with the associated id
-	 * @throws Exception
+	 * @throws Exception throws exceptions
 	 */
 	public static Map<Integer, ApplicationVM> createVMs(int number, String inboundPortURI) throws Exception {
 		Map<Integer, ApplicationVM> virtualMs = new HashMap<>();

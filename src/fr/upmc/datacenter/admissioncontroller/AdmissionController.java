@@ -138,40 +138,6 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 	RingDynamicStateDataOutboundPort rdsdop;
 	RingDynamicStateDataInboundPort rdsdip;
 
-
-	//	public AdmissionController(String admissionControllerURI,String applicationRequestInboundURI) throws Exception{
-	//		/* TODO */
-	//
-	//		this.toggleLogging();
-	//		this.toggleTracing();
-	//		this.addOfferedInterface(DataRequiredI.PushI.class) ;
-	//		this.addRequiredInterface(DataRequiredI.PullI.class) ;
-	//		this.admissionControllerURI=admissionControllerURI;
-	//		/*Initialize Request Dispatchers Mapping*/
-	//		applicationURI=new HashMap<Integer,String>();
-	//		requestDispatcherURI=new HashMap<Integer,String>();
-	//		requestDispatcherManagementURIs=new HashMap<Integer,String>();
-	//		/*Initialize Computers Mapping*/
-	//		computerURIs = new HashMap<Integer,String>();
-	//		computerServicesPorts = new HashMap<Integer,ComputerServicesOutboundPort>();
-	//		computerDynamicData = new HashMap<Integer,ComputerDynamicStateDataOutboundPort>();
-	//		computerStaticData = new HashMap<Integer,ComputerStaticStateDataOutboundPort>();
-	//
-	//		/*Initialized VMs Data List */
-	//		Reserved = new ArrayList<>();
-	//		Free= new ArrayList<>();
-	//		vmManagementOutBountPorts=new HashMap<Integer, ApplicationVMManagementOutboundPort>();
-	//
-	//		/* Init all ports */
-	//
-	//		this.addOfferedInterface(ApplicationRequestI.class) ;
-	//		this.applicationRequestInboundPort = new ApplicationRequestInboundPort(
-	//				applicationRequestInboundURI, this) ;
-	//		this.addPort(this.applicationRequestInboundPort) ;
-	//		this.applicationRequestInboundPort.publishPort() ;
-	//
-	//	}
-
 	public AdmissionController(String admissionControllerURI,String applicationRequestInboundURI,String admissionControllerManagementInboundURI) throws Exception{
 
 		super(1,1);

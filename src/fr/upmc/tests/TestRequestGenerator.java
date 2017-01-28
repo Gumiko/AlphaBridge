@@ -307,7 +307,7 @@ extends		AbstractCVM
 	/**
 	 * generate requests for 20 seconds and then stop generating.
 	 *
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public void			testScenario() throws Exception
 	{

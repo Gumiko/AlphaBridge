@@ -34,6 +34,30 @@ import fr.upmc.datacenter.software.ports.RequestNotificationOutboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 
+
+/**
+* The class <code>RequestDispatcher</code> implements the component representing
+* a Request Dispatcher in the data center.
+*
+* <p><strong>Description</strong></p>
+* 
+* The Request Dispatcher (RD) component receive the requests of the request generator
+* and dispatch them to the Application VM allocated to him
+* He's Linked to a Controller and the Request Dispatcher send him data about
+* the average time that make the requests to finish. 
+* 
+* 
+* AVM uses cores on processors to execute requests. To pass the request to
+* the cores, it requires the interface <code>ProcessorServicesI</code>
+* through <code>ProcessorServicesOutboundPort</code>. It receives the
+* notifications of the end of execution of the requests by offering the
+* interface <code>ProcessorServicesNotificationI</code> through the
+* inbound port <code>ProcessorServicesNotificationInboundPort</code>.
+* 
+* <p>Created on : 2016-2017</p>
+* 
+* @author	Cédric Ribeiro et Mokrane Kadri
+*/
 public class RequestDispatcher extends AbstractComponent
 implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHandlerI,RequestNotificationHandlerI,PushModeControllerI
 {

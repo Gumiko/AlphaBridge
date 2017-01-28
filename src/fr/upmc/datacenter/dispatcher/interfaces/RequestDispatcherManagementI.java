@@ -4,29 +4,29 @@ import fr.upmc.components.interfaces.OfferedI;
 import fr.upmc.components.interfaces.RequiredI;
 
 /**
- * The interface <code>RequestDispatcherManagementI</code>defines the methods
+ * The interface <code>RequestDispatcherManagementI</code> defines the methods
  * to manage the Request Dispatcher.
  *
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
- * @version	$Name$ -- $Revision$ -- $Date$
+ * @author	Cédric Ribeiro et Mokrane Kadri
  */
 public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	/**
-	 * deploy a vm to the request dispatcher
-	 * @param rd			id of the request dispatcher.
-	 * @param RequestDispatcherURIDVM uri of the vm.
-	 * @throws Exception
+	 * Add a Virtual Machine to the Request Dispatcher
+	 * @param vmUri			The Virtual Machine URI.
+	 * @param requestSubmissionInboundPortUri The Uri of the requestSubmissionInboundPort of the vm
+	 * @param avmManagementInboundPortUri The Management Port URI of The Virtual Machine 
+	 * @param VMExtendedManagementInboundPortURI The Extended Management Port URI of The Virtual Machine 
+	 * @throws Exception e
 	 */
-	public void bindVM(String vmUri, String str_rsop, String str_avmmop,String VMExtendedManagementOutboundPortURI) throws Exception;
+	public void bindVM(String vmUri, String requestSubmissionInboundPortUri, String avmManagementInboundPortUri,String VMExtendedManagementInboundPortURI) throws Exception;
 
 	/**
-	 * take back a vm of the request dispatcher
-	 * @param uriComputerParent the uri of the computer which delivered the allocated cores.
-	 * @param vm Uri of the vm.
-	 * @throws Exception
+	 * Remove a Virtual Machine of the Request Dispatcher
+	 * @param vmUri The Virtual Machine URI
+	 * @throws Exception e
 	 */
 	public void unbindVM(String vmUri) throws Exception;
 	

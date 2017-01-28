@@ -11,8 +11,7 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
- * @version	$Name$ -- $Revision$ -- $Date$
+ * @author	Cédric Ribeiro et Mokrane Kadri
  */
 public interface ApplicationRequestI extends OfferedI,RequiredI{
 
@@ -23,7 +22,7 @@ public interface ApplicationRequestI extends OfferedI,RequiredI{
 	 * @param rg_rsop			request submission outbound port of the request generator
 	 * @param rg_rnip			request notification outbound port of the request generator
 	 * @return boolean
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	
 	boolean acceptApplication(Integer application, String requestGeneratorURI, String rg_rsop, String rg_rnip)

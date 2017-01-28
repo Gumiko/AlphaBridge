@@ -11,8 +11,7 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
- * @version	$Name$ -- $Revision$ -- $Date$
+ * @author	Cédric Ribeiro et Mokrane Kadri
  */
 public class AdmissionControllerManagementInboundPort
 	extends		AbstractInboundPort implements AdmissionControllerManagementI
@@ -39,7 +38,7 @@ public class AdmissionControllerManagementInboundPort
 		}
 		
 		/**
-		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(String csopURI)
+		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(String,String,String,String)
 		 */
 		@Override
 		public void linkComputer(String computerURI,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,
