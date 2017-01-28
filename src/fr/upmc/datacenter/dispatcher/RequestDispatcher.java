@@ -138,10 +138,13 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void bindVM(int id,String vmRequestSubmissionInboundPortURI,String applicationVMManagementInboundPortURI,String VMExtendedManagementInboundPortURI) throws Exception {
 		this.logMessage("VM"+id+" : Linking...");
 		String notificationURI=RDuri+"NOTIF"+(notificationid++);
-		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(this);
-		RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(notificationURI,this);
-		ApplicationVMManagementOutboundPort avmmop=new ApplicationVMManagementOutboundPort(this);
+		
 		VMExtendedManagementOutboundPort vmemop=new VMExtendedManagementOutboundPort(this);
+		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(this);
+		ApplicationVMManagementOutboundPort avmmop=new ApplicationVMManagementOutboundPort(this);
+		RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(notificationURI,this);
+		
+		
 		
 		this.addPort(vmemop);
 		this.addPort(rsopvm);
@@ -162,7 +165,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		rsop.put(id, rsopvm);
 		avmmops.put(id, avmmop);
 		vmemops.put(id, vmemop);
-		//rnip.put(id, rnipvm);
+		rnip.put(id, rnipvm);
+		
 		this.logMessage("VM"+id+" : Linked !");
 	}
 
@@ -171,8 +175,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void unbindVM(int id) throws Exception {
 		rsop.get(id).doDisconnection();
 		rsop.remove(id);
-		//rnip.get(id).doDisconnection();
-		//rnip.remove(id);
+		rnip.get(id).doDisconnection();
+		rnip.remove(id);
 		avmmops.get(id).doDisconnection();
 		avmmops.remove(id);
 		vmemops.get(id).doDisconnection();
@@ -284,7 +288,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	public void	acceptRequestSubmissionAndNotify(final RequestI r) throws Exception
 	{
-		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" ==> "+"("+RDuri+")"+"VM-"+lastVM);
+		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" ==> "+rsop.get(lastVM).getPortURI());
 		rsop.get(lastVM).submitRequestAndNotify(r);
 		startTime.put(r.getRequestURI(), System.currentTimeMillis());
 		lastVM=(++lastVM)%rsop.keySet().size();

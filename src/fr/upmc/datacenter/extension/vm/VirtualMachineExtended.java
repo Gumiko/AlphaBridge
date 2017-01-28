@@ -23,6 +23,9 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 		vmemip=new VMExtendedManagementInboundPort(VMExtendedManagementInboundPortURI, this);
 		this.addPort(vmemip);
 		vmemip.publishPort();
+		
+		this.toggleTracing();
+		this.toggleLogging();
 	}
 
 	public VMData getData() throws Exception{
@@ -85,8 +88,8 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 
 	@Override
 	public void connectNotificationPort(String string) throws Exception {
+		this.logMessage("VM Connecting to port : "+string);
 		this.requestNotificationOutboundPort.doConnection(string, RequestNotificationConnector.class.getCanonicalName());
-		
 	}
-
+	
 }
