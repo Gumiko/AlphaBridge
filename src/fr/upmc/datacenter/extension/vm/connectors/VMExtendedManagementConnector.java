@@ -31,6 +31,11 @@ public class VMExtendedManagementConnector
 		return ((VMExtendedManagementI)this.offering).getData();
 	}
 	
+	@Override
+	public void connectNotificationPort(String string) throws Exception{
+		((VMExtendedManagementI)this.offering).connectNotificationPort(string);
+	}
+	
 	
 
 

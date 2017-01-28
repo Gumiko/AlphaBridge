@@ -51,4 +51,8 @@ implements	VMExtendedManagementI{
 		return ((VMExtendedManagementI)this.connector).getData();
 	}
 
+	public void connectNotificationPort(String string) throws Exception {
+		((VMExtendedManagementI)this.connector).connectNotificationPort(string);
+	}
+
 }

@@ -12,6 +12,7 @@ import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
 import fr.upmc.datacenter.hardware.processors.ports.ProcessorServicesOutboundPort;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
+import fr.upmc.datacenter.software.connectors.RequestNotificationConnector;
 
 public class VirtualMachineExtended extends ApplicationVM implements VMExtendedManagementI{
 	protected VMExtendedManagementInboundPort vmemip;
@@ -80,6 +81,12 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 		}
 
 		return rm;
+	}
+
+	@Override
+	public void connectNotificationPort(String string) throws Exception {
+		this.requestNotificationOutboundPort.doConnection(string, RequestNotificationConnector.class.getCanonicalName());
+		
 	}
 
 }
