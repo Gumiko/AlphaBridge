@@ -267,14 +267,14 @@ public class TestController extends AbstractCVM{
 			rgmop.startGeneration();
 			Thread.sleep(5000L);
 		}
-		if(arop.acceptApplication(2, "rg2","a2",RequestNotificationInboundPortURI2)){
-			Thread.sleep(2000L) ;
-			rg_rsop2.doConnection("a2", RequestSubmissionConnector.class.getCanonicalName());
-			rgmop2.startGeneration();
-		}
-		Thread.sleep(20000L);
+//		if(arop.acceptApplication(2, "rg2","a2",RequestNotificationInboundPortURI2)){
+//			Thread.sleep(2000L) ;
+//			rg_rsop2.doConnection("a2", RequestSubmissionConnector.class.getCanonicalName());
+//			rgmop2.startGeneration();
+//		}
+		Thread.sleep(50000L);
 		rgmop.stopGeneration();
-		rgmop2.stopGeneration();
+		//rgmop2.stopGeneration();
 		
 	}
 

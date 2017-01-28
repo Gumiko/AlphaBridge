@@ -14,4 +14,6 @@ public interface VMExtendedManagementI extends OfferedI,RequiredI{
 	public void addCore(AllocatedCore[] ac) throws Exception;
 	
 	public AllocatedCore[] removeAll();
+	
+	public void connectNotificationPort(String string) throws Exception;
 }

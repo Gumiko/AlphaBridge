@@ -53,5 +53,11 @@ public class VMExtendedManagementInboundPort extends AbstractOutboundPort implem
 		final VirtualMachineExtended c = (VirtualMachineExtended) this.owner;
 		return c.getData();
 	}
+	
+	@Override
+	public void connectNotificationPort(String string) throws Exception {
+		final VirtualMachineExtended c = (VirtualMachineExtended) this.owner;
+		 c.connectNotificationPort(string);
+	}
 
 }

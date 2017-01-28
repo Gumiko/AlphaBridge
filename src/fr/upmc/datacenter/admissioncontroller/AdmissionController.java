@@ -200,18 +200,26 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 			rd.linkRequestGenerator(requestGeneratorRequestNotificationInboundPort);
 
 			VMData temp=Reserved.remove(0);
-				
-			rd.bindVM(1, temp.getVMRequestSubmission(),temp.getVMManagement(),temp.getVMEManagement());
-			
-			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+RD_ID,RD_MIP_PREFIX+RD_ID,RD_AIP_PREFIX+RD_ID,CO_ID);
 
+			rd.bindVM(temp.getVMUri(), temp.getVMRequestSubmission(),temp.getVMManagement(),temp.getVMEManagement());
+
+			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+RD_ID,RD_MIP_PREFIX+RD_ID,RD_AIP_PREFIX+RD_ID,CO_ID);
+			rd.startUnlimitedPushing(5000);
 			RD_ID++;
 			APP_ID++;
 			CO_ID++;
+
+			if(!Free.isEmpty()){
+				VMData add = Free.remove(0);
+				Reserved.add(add);
+			}
+			this.logMessage("-------------------------------------------");
+			this.logMessage("Reserved VM : "+Reserved.size());
+			this.logMessage("Free VM : "+Free.size());
+			this.logMessage("-------------------------------------------");
 			return true;
-
-
 		}
+		this.logMessage("Refusing Application...");
 		return false;
 	}
 
@@ -234,7 +242,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		this.addPort(cssPort) ;
 		cssPort.publishPort() ;
 		cssPort.doConnection(computerStaticStateDataInboundPortURI, DataConnector.class.getCanonicalName());
-		
+
 		/**/
 		ComputerDynamicStateDataOutboundPort cdsPort = new ComputerDynamicStateDataOutboundPort(
 				COMPUTER_DYNAMIC_DATA_PREFIX+COMP_ID,
@@ -243,17 +251,17 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		this.addPort(cdsPort) ;
 		cdsPort.publishPort() ;
 		cdsPort.doConnection(computerDynamicStateDataInboundPortURI, ControlledDataConnector.class.getCanonicalName());
-		
+
 
 		computerDynamicData.put(COMP_ID,cdsPort);
 		computerStaticData.put(COMP_ID,cssPort);
 		/*Creating Inital VM*/
-		
+
 		ComputerStaticStateI staticState= (ComputerStaticStateI) cssPort.request();
 		int nbCores =staticState.getNumberOfCoresPerProcessor();
 		int nbProc = staticState.getNumberOfProcessors();
 		this.logMessage("Computer : "+nbCores+" Cores & "+nbProc+" Processor");
-		this.logMessage("Creating "+((nbCores*nbProc)/2)+" VM with "+PARAMETER_INITIAL_NB_CORE+" cores");
+		this.logMessage("Creating "+(((nbCores*nbProc)/2)/PARAMETER_INITIAL_NB_CORE)+" VM with "+PARAMETER_INITIAL_NB_CORE+" cores");
 		for(int i=0;i<(nbCores*nbProc)/2;i++){
 			AllocatedCore[] acs=csPort.allocateCores(PARAMETER_INITIAL_NB_CORE);
 			if(acs.length!=0){
@@ -265,7 +273,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 					Free.add(vme.getData());
 			}
 		}
-		
+
 		this.logMessage("Reserved VM : "+Reserved.size());
 		this.logMessage("Free VM : "+Free.size());
 
