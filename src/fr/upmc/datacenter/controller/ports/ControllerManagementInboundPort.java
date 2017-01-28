@@ -50,12 +50,30 @@ public class ControllerManagementInboundPort extends AbstractInboundPort impleme
 		final Controller c = (Controller) this.owner;
 		return c.getPreviousControllerUri();
 	}
+	
+	@Override
+	public void setNextControllerUri(String controllerManagementUri) {
+		final Controller c = (Controller) this.owner;
+		c.setNextControllerUri(controllerManagementUri);
+	}
+
+	@Override
+	public void setPreviousControllerUri(String controllerManagementUri) {
+		final Controller c = (Controller) this.owner;
+		c.setPreviousControllerUri(controllerManagementUri);
+	}
 
 	@Override
 	public void bindSendingDataUri(String DataInboundPortUri) throws Exception {
 		final Controller c = (Controller) this.owner;
 		c.bindSendingDataUri(DataInboundPortUri);
 
+	}
+	
+	@Override
+	public String getControllerRingDataInboundPortUri() throws Exception{
+		final Controller c = (Controller)this.owner;
+		return c.getControllerRingDataInboundPortUri();
 	}
 
 }

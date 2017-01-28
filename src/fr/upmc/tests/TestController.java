@@ -158,7 +158,7 @@ public class TestController extends AbstractCVM{
 		this.addDeployedComponent(c2) ;
 
 		/* Create The Controller */
-		AdmissionController admissionController= new AdmissionController("controller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
+		AdmissionController admissionController= new AdmissionController("admissioncontroller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
 
 		/*Management Port to submit computer*/
 		this.cmop = new AdmissionControllerManagementOutboundPort(
@@ -188,7 +188,7 @@ public class TestController extends AbstractCVM{
 		RequestGenerator rg1 =
 				new RequestGenerator(
 						"rg1",			// generator component URI
-						500.0,			// mean time between two requests
+						800.0,			// mean time between two requests
 						6000000000L,	// mean number of instructions in requests
 						RequestGeneratorManagementInboundPortURI,
 						RequestSubmissionOutboundPortURI,
@@ -207,7 +207,7 @@ public class TestController extends AbstractCVM{
 		RequestGenerator rg2 =
 				new RequestGenerator(
 						"rg2",			// generator component URI
-						500.0,			// mean time between two requests
+						800.0,			// mean time between two requests
 						6000000000L,	// mean number of instructions in requests
 						RequestGeneratorManagementInboundPortURI2,
 						RequestSubmissionOutboundPortURI2,

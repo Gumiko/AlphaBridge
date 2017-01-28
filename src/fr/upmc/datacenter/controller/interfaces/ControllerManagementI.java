@@ -9,10 +9,16 @@ public interface ControllerManagementI extends OfferedI,RequiredI{
 	
 	public void startSending() throws Exception;
 	
-	public String getNextControllerUri();
+	public String getNextControllerUri() throws Exception;
 	
-	public String getPreviousControllerUri();
+	public String getPreviousControllerUri() throws Exception;
 	
 	public void bindSendingDataUri(String DataInboundPortUri) throws Exception;
+
+	void setNextControllerUri(String controllerManagementUri) throws Exception;
+
+	void setPreviousControllerUri(String controllerManagementUri) throws Exception;
+
+	String getControllerRingDataInboundPortUri() throws Exception;
 
 }

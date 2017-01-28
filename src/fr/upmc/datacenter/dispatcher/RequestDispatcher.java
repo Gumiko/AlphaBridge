@@ -289,14 +289,14 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 			throws Exception
 	{
 		
-		this.logMessage("Dispatcher["+id+"] : "+r.getRequestURI() +" => "+vms.get(lastVM).getPortURI());
+		//this.logMessage("Dispatcher["+id+"] : "+r.getRequestURI() +" => "+vms.get(lastVM).getPortURI());
 		vms.get(lastVM).submitRequest(r);
 		lastVM=(++lastVM)%vms.size();
 	}
 
 	public void	acceptRequestSubmissionAndNotify(final RequestI r) throws Exception
 	{
-		this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" =====> "+vms.get(lastVM).getPortURI());
+		//this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" =====> "+vms.get(lastVM).getPortURI());
 		vms.get(lastVM).submitRequestAndNotify(r);
 		startTime.put(r.getRequestURI(), System.currentTimeMillis());
 		lastVM=(++lastVM)%vms.size();
@@ -304,7 +304,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	@Override
 	public void acceptRequestTerminationNotification(RequestI r) throws Exception {
-		this.logMessage("Dispatcher&T["+id+"] : "+r.getRequestURI() +" => "+rnop.getPortURI());
+		//this.logMessage("Dispatcher&T["+id+"] : "+r.getRequestURI() +" => "+rnop.getPortURI());
 		this.rnop.notifyRequestTermination(r);
 		endTime.put(r.getRequestURI(), System.currentTimeMillis());
 		lastTime.put(r.getRequestURI(), endTime.get(r.getRequestURI())-startTime.get(r.getRequestURI()));
