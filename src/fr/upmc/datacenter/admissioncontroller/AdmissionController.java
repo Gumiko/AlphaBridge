@@ -189,8 +189,8 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		computerStaticData = new HashMap<Integer,ComputerStaticStateDataOutboundPort>();
 
 		/*Initialized VMs Data List */
-		Reserved = new ArrayList<>();
-		Free= new ArrayList<>();
+		Reserved = new ArrayList<VMData>();
+		Free= new ArrayList<VMData>();
 		vmManagementOutBountPorts=new HashMap<Integer, ApplicationVMManagementOutboundPort>();
 
 		/* Init all ports */
@@ -267,6 +267,8 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 				rdsdop.doConnection(co.getControllerRingDataInboundPortUri(),ControlledDataConnector.class.getCanonicalName());
 				/*Get the old next controller data inbound port uri*/
 				ControllerManagementOutboundPort cmop=new ControllerManagementOutboundPort(this);
+				this.addPort(cmop);
+				cmop.publishPort();
 				cmop.doConnection(this.nextControllerManagementUri, ControllerManagementConnector.class.getCanonicalName());
 				/*Connect the new next controller to the old next controller */
 				co.bindSendingDataUri(cmop.getControllerRingDataInboundPortUri());
@@ -275,16 +277,19 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 				co.setPreviousControllerUri(this.admissionControllerManagementInboundPort.getPortURI());
 
 				this.nextControllerManagementUri=CONTROLLER_MANAGEMENT_PREFIX+CO_ID;
-
+				
 				cmop.doDisconnection();
+				cmop.unpublishPort();
 				cmop.destroyPort();
 
 			}
-			this.startUnlimitedPushing(4000);
+
 			co.startUnlimitedPushing(4000);
+			this.startUnlimitedPushing(4000);
 			RD_ID++;
 			APP_ID++;
 			CO_ID++;
+			this.logMessage("Application Accepted...");
 			return true;
 		}
 		this.logMessage("Refusing Application...");
@@ -424,10 +429,13 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 			throws Exception {
 		synchronized(o){
 			this.logMessage("[----DATA----]"+this.admissionControllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
-			Free.addAll(currentDynamicState.getVMDataList());
-			while(Reserved.size() <= 4){
+			
+			if(!currentDynamicState.getVMDataList().isEmpty())
+				Free.addAll(currentDynamicState.getVMDataList());
+			while(Reserved.size() < MAX_VM_RESERVED && !Free.isEmpty()){
 				Reserved.add(Free.remove(0));
 			}
+			this.logMessage("[----DATA----]"+this.admissionControllerURI+ " FREE["+Free.size()+"] | RESERVED["+Reserved.size()+"]");
 		}
 
 	}

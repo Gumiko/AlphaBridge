@@ -239,7 +239,9 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 			throws Exception {
 		synchronized(o){
 			this.logMessage("[----DATA----]"+this.controllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
+			
 			vmFree.addAll(currentDynamicState.getVMDataList());
+			this.logMessage("[----DATA----]"+this.controllerURI+ " FREE["+vmFree.size()+"] | RESERVED["+vmReserved.size()+"]");
 			if(waitingAllocation>0){
 
 			}

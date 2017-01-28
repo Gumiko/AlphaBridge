@@ -188,7 +188,7 @@ public class TestController extends AbstractCVM{
 		RequestGenerator rg1 =
 				new RequestGenerator(
 						"rg1",			// generator component URI
-						800.0,			// mean time between two requests
+						1500.0,			// mean time between two requests
 						6000000000L,	// mean number of instructions in requests
 						RequestGeneratorManagementInboundPortURI,
 						RequestSubmissionOutboundPortURI,
@@ -207,7 +207,7 @@ public class TestController extends AbstractCVM{
 		RequestGenerator rg2 =
 				new RequestGenerator(
 						"rg2",			// generator component URI
-						800.0,			// mean time between two requests
+						1500.0,			// mean time between two requests
 						6000000000L,	// mean number of instructions in requests
 						RequestGeneratorManagementInboundPortURI2,
 						RequestSubmissionOutboundPortURI2,
@@ -267,14 +267,14 @@ public class TestController extends AbstractCVM{
 			rgmop.startGeneration();
 			Thread.sleep(5000L);
 		}
-//		if(arop.acceptApplication(2, "rg2","a2",RequestNotificationInboundPortURI2)){
-//			Thread.sleep(2000L) ;
-//			rg_rsop2.doConnection("a2", RequestSubmissionConnector.class.getCanonicalName());
-//			rgmop2.startGeneration();
-//		}
+		if(arop.acceptApplication(2, "rg2","a2",RequestNotificationInboundPortURI2)){
+			Thread.sleep(2000L) ;
+			rg_rsop2.doConnection("a2", RequestSubmissionConnector.class.getCanonicalName());
+			rgmop2.startGeneration();
+		}
 		Thread.sleep(50000L);
 		rgmop.stopGeneration();
-		//rgmop2.stopGeneration();
+		rgmop2.stopGeneration();
 		
 	}
 
