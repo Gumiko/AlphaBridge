@@ -65,6 +65,7 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 		this.allocateCores(ac);
 	}
 	
+	
 	public AllocatedCore[] removeAll(){
 		List<AllocatedCore> removelist=new ArrayList<AllocatedCore>();
 		AllocatedCore temp=null;
