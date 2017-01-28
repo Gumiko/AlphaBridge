@@ -55,7 +55,7 @@ public class ControllerManagementInboundPort extends AbstractInboundPort impleme
 	public void bindSendingDataUri(String DataInboundPortUri) throws Exception {
 		final Controller c = (Controller) this.owner;
 		c.bindSendingDataUri(DataInboundPortUri);
-		
+
 	}
 
 }

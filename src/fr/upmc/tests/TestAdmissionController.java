@@ -13,7 +13,7 @@ import fr.upmc.datacenter.admissioncontroller.connectors.ApplicationRequestConne
 import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestInboundPort;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestOutboundPort;
-import fr.upmc.datacenter.admissioncontroller.ports.ControllerManagementOutboundPort;
+import fr.upmc.datacenter.admissioncontroller.ports.AdmissionControllerManagementOutboundPort;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.hardware.computers.Computer;
 import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
@@ -87,7 +87,7 @@ public class TestAdmissionController extends AbstractCVM{
 	protected RequestNotificationInboundPort rg_rnip2;
 
 	protected ApplicationRequestOutboundPort arop;
-	protected ControllerManagementOutboundPort cmop;
+	protected AdmissionControllerManagementOutboundPort cmop;
 
 
 	public TestAdmissionController() throws Exception {
@@ -176,7 +176,7 @@ public class TestAdmissionController extends AbstractCVM{
 				ApplicationRequestConnector.class.getCanonicalName()) ;
 		
 		/*Management Port to submit computer*/
-		this.cmop = new ControllerManagementOutboundPort(
+		this.cmop = new AdmissionControllerManagementOutboundPort(
 				ControllerManagementOutboundPortURI,
 				new AbstractComponent() {}) ;
 		this.cmop.publishPort() ;

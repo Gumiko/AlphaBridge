@@ -20,7 +20,7 @@ import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.admissioncontroller.connectors.ApplicationRequestConnector;
 import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestOutboundPort;
-import fr.upmc.datacenter.admissioncontroller.ports.ControllerManagementOutboundPort;
+import fr.upmc.datacenter.admissioncontroller.ports.AdmissionControllerManagementOutboundPort;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.hardware.computers.Computer;
 import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
@@ -110,7 +110,7 @@ extends		AbstractDistributedCVM
 	protected RequestNotificationInboundPort rg_rnip2;
 
 	protected ApplicationRequestOutboundPort arop;
-	protected ControllerManagementOutboundPort cmop;
+	protected AdmissionControllerManagementOutboundPort cmop;
 
 	public	TestDistributedCVM(String[] args)
 			throws Exception
@@ -149,7 +149,7 @@ extends		AbstractDistributedCVM
 					controller) ;
 			this.arop.publishPort() ;
 			
-			this.cmop = new ControllerManagementOutboundPort(
+			this.cmop = new AdmissionControllerManagementOutboundPort(
 					ControllerManagementOutboundPortURI,
 					controller) ;
 			this.cmop.publishPort() ;

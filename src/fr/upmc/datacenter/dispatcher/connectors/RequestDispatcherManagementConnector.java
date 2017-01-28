@@ -18,8 +18,8 @@ implements	RequestDispatcherManagementI{
 	 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 	 */
 	@Override
-	public void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception {
-		((RequestDispatcherManagementI)this.offering).bindVM(id,str_rsop,str_rnip,str_avmmop);
+	public void bindVM(int id, String str_rsop, String str_avmmop) throws Exception {
+		((RequestDispatcherManagementI)this.offering).bindVM(id,str_rsop,str_avmmop);
 		
 	}
 	/**

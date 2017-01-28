@@ -29,7 +29,7 @@ implements	ControllerManagementI{
 	}
 
 	@Override
-	public void bindSendingDataUri(String DataInboundPortUri) {
+	public void bindSendingDataUri(String DataInboundPortUri) throws Exception {
 		((ControllerManagementI)this.offering).bindSendingDataUri(DataInboundPortUri);
 	}
 }

@@ -20,7 +20,7 @@ public interface RequestDispatcherManagementI extends OfferedI,RequiredI{
 	 * @param RequestDispatcherURIDVM uri of the vm.
 	 * @throws Exception
 	 */
-	public void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception;
+	public void bindVM(int id, String str_rsop, String str_avmmop) throws Exception;
 
 	/**
 	 * take back a vm of the request dispatcher
