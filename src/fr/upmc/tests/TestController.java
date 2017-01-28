@@ -22,6 +22,7 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerStaticStateDataOutboundPort;
 import fr.upmc.datacenter.hardware.tests.ComputerMonitor;
 import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
+import fr.upmc.datacenter.software.connectors.RequestSubmissionConnector;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestNotificationOutboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
@@ -29,7 +30,7 @@ import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
 import fr.upmc.datacenterclient.requestgenerator.connectors.RequestGeneratorManagementConnector;
 import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagementOutboundPort;
 
-public class TestAdmissionControllerSplitting extends AbstractCVM{
+public class TestController extends AbstractCVM{
 	public static final String	RequestSubmissionInboundPortURI = "rsibp" ;
 	public static final String	RequestSubmissionOutboundPortURI = "rsobp" ;
 
@@ -64,7 +65,7 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 	
 	private static final String ApplicationRequestOutboundPortURI = "ar-op";
 	private static final String ApplicationRequestInboundPortURI = "ar-ip";
-
+	
 	private static final String ControllerManagementOutboundPortURI = "cm-op";
 	private static final String ControllerManagementInboundPortURI = "cm-ip";
 
@@ -87,10 +88,10 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 	 *  execution (starting and stopping the request generation).			*/
 	protected RequestGeneratorManagementOutboundPort	rgmop ;
 	protected RequestGeneratorManagementOutboundPort	rgmop2 ;
-
+	
 	protected RequestSubmissionOutboundPort rg_rsop;
 	protected RequestNotificationInboundPort rg_rnip;
-
+	
 	protected RequestSubmissionOutboundPort rg_rsop2;
 	protected RequestNotificationInboundPort rg_rnip2;
 
@@ -98,16 +99,13 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 	protected AdmissionControllerManagementOutboundPort cmop;
 
 
-	public TestAdmissionControllerSplitting() throws Exception {
+	public TestController() throws Exception {
 		super();
 	}
 
 	@Override
 	public void	deploy() throws Exception
 	{
-		/*TODO*/
-		/* Create Processor / Computer */
-
 		// --------------------------------------------------------------------
 		// Create and deploy a computer component with its 2 processors and
 		// each with 8 cores.
@@ -175,6 +173,66 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 		cmop.linkComputer(computerURI,ComputerServicesInboundPortURI,ComputerStaticStateDataInboundPortURI,ComputerDynamicStateDataInboundPortURI);
 		
 		cmop.linkComputer(computerURI2,ComputerServicesInboundPortURI2,ComputerStaticStateDataInboundPortURI2,ComputerDynamicStateDataInboundPortURI2);
+
+		/*Application submit port */
+		this.arop = new ApplicationRequestOutboundPort(
+				ApplicationRequestOutboundPortURI,
+				new AbstractComponent() {}) ;
+		this.arop.publishPort() ;
+		this.arop.doConnection(
+				ApplicationRequestInboundPortURI,
+				ApplicationRequestConnector.class.getCanonicalName()) ;
+
+		/* Create Request Generators */
+		/* RG 1 */
+		RequestGenerator rg1 =
+				new RequestGenerator(
+						"rg1",			// generator component URI
+						500.0,			// mean time between two requests
+						6000000000L,	// mean number of instructions in requests
+						RequestGeneratorManagementInboundPortURI,
+						RequestSubmissionOutboundPortURI,
+						RequestNotificationInboundPortURI) ;
+		this.addDeployedComponent(rg1) ;
+		
+		
+		this.rgmop = new RequestGeneratorManagementOutboundPort(
+				RequestGeneratorManagementOutboundPortURI,
+				new AbstractComponent() {}) ;
+		this.rgmop.publishPort() ;
+		this.rgmop.doConnection(
+				RequestGeneratorManagementInboundPortURI,
+				RequestGeneratorManagementConnector.class.getCanonicalName()) ;
+		
+		RequestGenerator rg2 =
+				new RequestGenerator(
+						"rg2",			// generator component URI
+						500.0,			// mean time between two requests
+						6000000000L,	// mean number of instructions in requests
+						RequestGeneratorManagementInboundPortURI2,
+						RequestSubmissionOutboundPortURI2,
+						RequestNotificationInboundPortURI2) ;
+		this.addDeployedComponent(rg2) ;
+		
+		
+		/*RG 2 */
+		this.rgmop2 = new RequestGeneratorManagementOutboundPort(
+				RequestGeneratorManagementOutboundPortURI2,
+				new AbstractComponent() {}) ;
+		this.rgmop2.publishPort() ;
+		this.rgmop2.doConnection(
+				RequestGeneratorManagementInboundPortURI2,
+				RequestGeneratorManagementConnector.class.getCanonicalName()) ;
+		
+		rg1.toggleLogging();
+		rg1.toggleTracing();
+		rg2.toggleLogging();
+		rg2.toggleTracing();
+
+		rg_rsop=(RequestSubmissionOutboundPort) rg1.findPortFromURI(RequestSubmissionOutboundPortURI);
+		rg_rsop2=(RequestSubmissionOutboundPort) rg2.findPortFromURI(RequestSubmissionOutboundPortURI2);
+
+		
 		super.deploy();
 	}
 
@@ -185,6 +243,13 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 
 	public void	shutdown() throws Exception
 	{
+		// disconnect all ports explicitly connected in the deploy phase.
+		//		this.csPort.doDisconnection() ;
+		//		this.avmPort.doDisconnection() ;
+		//		this.rsobp.doDisconnection() ;
+		//		this.nobp.doDisconnection() ;
+		//		this.rgmop.doDisconnection() ;
+
 		super.shutdown() ;
 	}
 
@@ -192,7 +257,25 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 
 	public void			testScenario() throws Exception
 	{
+		/* TODO */
+		/* Send New Application to the Controller*/
 
+		Thread.sleep(2000L) ;
+		if(arop.acceptApplication(1, "rg1","a1",RequestNotificationInboundPortURI)){
+			Thread.sleep(2000L) ;
+			rg_rsop.doConnection("a1", RequestSubmissionConnector.class.getCanonicalName());
+			rgmop.startGeneration();
+			Thread.sleep(5000L);
+		}
+		if(arop.acceptApplication(2, "rg2","a2",RequestNotificationInboundPortURI2)){
+			Thread.sleep(2000L) ;
+			rg_rsop2.doConnection("a2", RequestSubmissionConnector.class.getCanonicalName());
+			rgmop2.startGeneration();
+		}
+		Thread.sleep(20000L);
+		rgmop.stopGeneration();
+		rgmop2.stopGeneration();
+		
 	}
 
 	/**
@@ -205,7 +288,7 @@ public class TestAdmissionControllerSplitting extends AbstractCVM{
 		// Uncomment next line to execute components in debug mode.
 		// AbstractCVM.toggleDebugMode() ;
 		try {
-			final TestAdmissionControllerSplitting tc = new TestAdmissionControllerSplitting() ;
+			final TestController tc = new TestController() ;
 			// Deploy the components
 			tc.deploy() ;
 			System.out.println("starting.......") ;

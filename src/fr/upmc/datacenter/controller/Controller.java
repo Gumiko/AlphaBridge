@@ -97,9 +97,14 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		rdmop.doConnection(rdmipURI, RequestDispatcherManagementConnector.class.getCanonicalName());
 
 		rdaop=new RequestDispatcherActuatorOutboundPort(this);
+		this.addPort(rdaop);
+		rdaop.publishPort();
 		rdaop.doConnection(rdaipURI, RequestDispatcherActuatorConnector.class.getCanonicalName());
 
+		
 		rddsdop=new RequestDispatcherDynamicStateDataOutboundPort(this,controllerURI);
+		this.addPort(rddsdop);
+		rddsdop.publishPort();
 		rddsdop.doConnection(rddsdipURI,ControlledDataConnector.class.getCanonicalName());
 
 		//rdmop.addVM(int id,String a,String b,String c);

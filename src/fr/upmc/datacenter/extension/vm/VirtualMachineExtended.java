@@ -21,21 +21,22 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 				requestNotificationOutboundPortURI);
 		vmemip=new VMExtendedManagementInboundPort(VMExtendedManagementInboundPortURI, this);
 		this.addPort(vmemip);
+		vmemip.publishPort();
 	}
-	
+
 	public VMData getData() throws Exception{
 		int c= this.allocatedCoresIdleStatus.size();
 		//Map<String, ProcessorServicesOutboundPort> x=this.processorServicesPorts;
-		
+
 		Map<String,Map<ProcessorPortTypes,String>> proc=new HashMap<String,Map<ProcessorPortTypes,String>>();
-//		for(Entry<String,ProcessorServicesOutboundPort> e: x.entrySet()){
-//			proc.put(e.getKey(), e.getValue().getClientPortURI());
-//			
-//		}
+		//		for(Entry<String,ProcessorServicesOutboundPort> e: x.entrySet()){
+		//			proc.put(e.getKey(), e.getValue().getClientPortURI());
+		//			
+		//		}
 		for(AllocatedCore ac: this.allocatedCoresIdleStatus.keySet()){
 			proc.put(ac.processorURI, ac.processorInboundPortURI);
 		}
-		return new VMData(c,proc,this.applicationVMManagementInboundPort.getPortURI(),this.vmemip.getPortURI());
+		return new VMData(c,proc,this.applicationVMManagementInboundPort.getPortURI(),this.vmemip.getPortURI(),this.requestSubmissionInboundPort.getPortURI());
 	}
 
 	public AllocatedCore[] removeCore(int number){
@@ -56,28 +57,28 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 			this.allocatedCoresIdleStatus.remove(removelist.get(i));
 			rm[i]=removelist.get(i);
 		}
-		
+
 		return rm;
-		
+
 	}
-	
+
 	public void addCore(AllocatedCore[] ac) throws Exception{
 		this.allocateCores(ac);
 	}
-	
+
 	public AllocatedCore[] removeAll(){
 		List<AllocatedCore> removelist=new ArrayList<AllocatedCore>();
 		AllocatedCore temp=null;
 		for(Entry<AllocatedCore, Boolean> set :this.allocatedCoresIdleStatus.entrySet()){
-				temp=set.getKey();
-				removelist.add(temp);
+			temp=set.getKey();
+			removelist.add(temp);
 		}
 		AllocatedCore[] rm=new AllocatedCore[removelist.size()];
 		for(int i=0;i<removelist.size();i++){
 			this.allocatedCoresIdleStatus.remove(removelist.get(i));
 			rm[i]=removelist.get(i);
 		}
-		
+
 		return rm;
 	}
 

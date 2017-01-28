@@ -14,7 +14,24 @@ public class VMData {
 	String VMIntrospection;
 	String VMManagement;
 	String VMEManagement;
+	String VMRequestSubmission;
 	
+	public VMData(int nbCore, Map<String, Map<ProcessorPortTypes, String>> proc, String VMM, String VMEM,String RequestSubmission) throws Exception{
+		this.nbCore=nbCore;
+		this.proc=proc;
+		this.VMManagement=VMM;
+		this.VMEManagement=VMEM;
+		this.VMRequestSubmission=RequestSubmission;
+	}
+	
+	public String getVMRequestSubmission() {
+		return VMRequestSubmission;
+	}
+
+	public void setVMRequestSubmission(String vMRequestSubmission) {
+		VMRequestSubmission = vMRequestSubmission;
+	}
+
 	public VMData(int nbCore, Map<String, Map<ProcessorPortTypes, String>> proc, String VMM, String VMEM) throws Exception{
 		this.nbCore=nbCore;
 		this.proc=proc;
