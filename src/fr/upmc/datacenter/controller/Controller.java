@@ -69,15 +69,8 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	List<AllocatedCore> acReserved;
 	List<AllocatedCore> acFree;
 
-
 	List<VMData> vmReserved;
 	List<VMData> vmFree;
-
-	/*
-	 *  ControllerRingDataInboundPort crdip;
-	 *  ControllerRingDataOutboundPort crdop;
-	 * 
-	 */
 
 	int idVM=1;
 
@@ -94,6 +87,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 
 		vmReserved = new ArrayList<VMData>();
 		vmFree = new ArrayList<VMData>();
+		
 		acReserved = new ArrayList<AllocatedCore>();
 		acFree=new ArrayList<AllocatedCore>();
 

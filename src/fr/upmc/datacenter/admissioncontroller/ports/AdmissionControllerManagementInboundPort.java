@@ -14,12 +14,12 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * @author	<a href="#">C�dric Ribeiro & Mokrane Kadri</a>
  * @version	$Name$ -- $Revision$ -- $Date$
  */
-public class ControllerManagementInboundPort
+public class AdmissionControllerManagementInboundPort
 	extends		AbstractInboundPort implements AdmissionControllerManagementI
 	{
 		private static final long serialVersionUID = 1L;
 
-		public		ControllerManagementInboundPort(
+		public		AdmissionControllerManagementInboundPort(
 				ComponentI owner
 				) throws Exception
 		{
@@ -28,7 +28,7 @@ public class ControllerManagementInboundPort
 			assert	owner != null && owner instanceof AdmissionController ;
 		}
 
-		public				ControllerManagementInboundPort(
+		public				AdmissionControllerManagementInboundPort(
 				String uri,
 				ComponentI owner
 				) throws Exception
@@ -37,21 +37,15 @@ public class ControllerManagementInboundPort
 
 			assert	owner != null && owner instanceof AdmissionController ;
 		}
-		/**
-		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
-		 */
-		@Override
-		public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
-			final AdmissionController c = (AdmissionController) this.owner;
-			c.linkComputer(c_out);
-		}
 		
 		/**
 		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(String csopURI)
 		 */
 		@Override
-		public void linkComputer(String csopURI,String csipURI) throws Exception {
+		public void linkComputer(String computerURI,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,
+				String ComputerDynamicStateDataInboundPortURI) throws Exception {
 			final AdmissionController c = (AdmissionController) this.owner;
-			c.linkComputer(csopURI,csipURI);
+			c.linkComputer(computerURI,ComputerServicesInboundPortURI, ComputerStaticStateDataInboundPortURI,
+					 ComputerDynamicStateDataInboundPortURI);
 		}
 }

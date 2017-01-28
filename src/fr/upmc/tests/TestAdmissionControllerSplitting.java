@@ -29,7 +29,7 @@ import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
 import fr.upmc.datacenterclient.requestgenerator.connectors.RequestGeneratorManagementConnector;
 import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagementOutboundPort;
 
-public class TestAdmissionController extends AbstractCVM{
+public class TestAdmissionControllerSplitting extends AbstractCVM{
 	public static final String	RequestSubmissionInboundPortURI = "rsibp" ;
 	public static final String	RequestSubmissionOutboundPortURI = "rsobp" ;
 
@@ -56,7 +56,7 @@ public class TestAdmissionController extends AbstractCVM{
 	public static final String	ComputerDynamicStateDataOutboundPortURI = "cds-dop" ;
 	private static final String ApplicationRequestOutboundPortURI = "ar-op";
 	private static final String ApplicationRequestInboundPortURI = "ar-ip";
-	
+
 	private static final String ControllerManagementOutboundPortURI = "cm-op";
 	private static final String ControllerManagementInboundPortURI = "cm-ip";
 
@@ -79,10 +79,10 @@ public class TestAdmissionController extends AbstractCVM{
 	 *  execution (starting and stopping the request generation).			*/
 	protected RequestGeneratorManagementOutboundPort	rgmop ;
 	protected RequestGeneratorManagementOutboundPort	rgmop2 ;
-	
+
 	protected RequestSubmissionOutboundPort rg_rsop;
 	protected RequestNotificationInboundPort rg_rnip;
-	
+
 	protected RequestSubmissionOutboundPort rg_rsop2;
 	protected RequestNotificationInboundPort rg_rnip2;
 
@@ -90,7 +90,7 @@ public class TestAdmissionController extends AbstractCVM{
 	protected AdmissionControllerManagementOutboundPort cmop;
 
 
-	public TestAdmissionController() throws Exception {
+	public TestAdmissionControllerSplitting() throws Exception {
 		super();
 	}
 
@@ -104,7 +104,7 @@ public class TestAdmissionController extends AbstractCVM{
 		// Create and deploy a computer component with its 2 processors and
 		// each with 8 cores.
 		// --------------------------------------------------------------------
-		String computerURI = "computer0" ;
+		String computerURI = "computer1" ;
 		int numberOfProcessors = 2 ;
 		int numberOfCores = 8 ;
 		Set<Integer> admissibleFrequencies = new HashSet<Integer>() ;
@@ -129,52 +129,52 @@ public class TestAdmissionController extends AbstractCVM{
 
 		// Create a mock-up computer services port to later allocate its cores
 		// to the application virtual machine.
-		this.csPort = new ComputerServicesOutboundPort(
-				ComputerServicesOutboundPortURI,
-				new AbstractComponent() {}) ;
-		this.csPort.publishPort() ;
-		this.csPort.doConnection(
-				ComputerServicesInboundPortURI,
-				ComputerServicesConnector.class.getCanonicalName()) ;
+		//		this.csPort = new ComputerServicesOutboundPort(
+		//				ComputerServicesOutboundPortURI,
+		//				new AbstractComponent() {}) ;
+		//		this.csPort.publishPort() ;
+		//		this.csPort.doConnection(
+		//				ComputerServicesInboundPortURI,
+		//				ComputerServicesConnector.class.getCanonicalName()) ;
 		// --------------------------------------------------------------------
 
 		// --------------------------------------------------------------------
 		// Create the computer monitor component and connect its to ports
 		// with the computer component.
 		// --------------------------------------------------------------------
-		ComputerMonitor cm =
-				new ComputerMonitor(computerURI,
-						true,
-						ComputerStaticStateDataOutboundPortURI,
-						ComputerDynamicStateDataOutboundPortURI) ;
-		this.addDeployedComponent(cm) ;
-		this.cssPort =
-				(ComputerStaticStateDataOutboundPort)
-				cm.findPortFromURI(ComputerStaticStateDataOutboundPortURI) ;
-		this.cssPort.doConnection(
-				ComputerStaticStateDataInboundPortURI,
-				DataConnector.class.getCanonicalName()) ;
-
-		this.cdsPort =
-				(ComputerDynamicStateDataOutboundPort)
-				cm.findPortFromURI(ComputerDynamicStateDataOutboundPortURI) ;
-		this.cdsPort.
-		doConnection(
-				ComputerDynamicStateDataInboundPortURI,
-				ControlledDataConnector.class.getCanonicalName()) ;
+//				ComputerMonitor cm =
+//						new ComputerMonitor(computerURI,
+//								true,
+//								ComputerStaticStateDataOutboundPortURI,
+//								ComputerDynamicStateDataOutboundPortURI) ;
+//				this.addDeployedComponent(cm) ;
+//				this.cssPort =
+//						(ComputerStaticStateDataOutboundPort)
+//						cm.findPortFromURI(ComputerStaticStateDataOutboundPortURI) ;
+//				this.cssPort.doConnection(
+//						ComputerStaticStateDataInboundPortURI,
+//						DataConnector.class.getCanonicalName()) ;
+//		
+//				this.cdsPort =
+//						(ComputerDynamicStateDataOutboundPort)
+//						cm.findPortFromURI(ComputerDynamicStateDataOutboundPortURI) ;
+//				this.cdsPort.
+//				doConnection(
+//						ComputerDynamicStateDataInboundPortURI,
+//						ControlledDataConnector.class.getCanonicalName()) ;
 
 		/* Create The Controller */
-		AdmissionController controller= new AdmissionController("controller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
+		AdmissionController admissionController= new AdmissionController("controller1", ApplicationRequestInboundPortURI,ControllerManagementInboundPortURI);
 
 		/*Application submit port */
-		this.arop = new ApplicationRequestOutboundPort(
-				ApplicationRequestOutboundPortURI,
-				new AbstractComponent() {}) ;
-		this.arop.publishPort() ;
-		this.arop.doConnection(
-				ApplicationRequestInboundPortURI,
-				ApplicationRequestConnector.class.getCanonicalName()) ;
-		
+//		this.arop = new ApplicationRequestOutboundPort(
+//				ApplicationRequestOutboundPortURI,
+//				new AbstractComponent() {}) ;
+//		this.arop.publishPort() ;
+//		this.arop.doConnection(
+//				ApplicationRequestInboundPortURI,
+//				ApplicationRequestConnector.class.getCanonicalName()) ;
+
 		/*Management Port to submit computer*/
 		this.cmop = new AdmissionControllerManagementOutboundPort(
 				ControllerManagementOutboundPortURI,
@@ -185,63 +185,7 @@ public class TestAdmissionController extends AbstractCVM{
 				AdmissionControllerManagementConnector.class.getCanonicalName()) ;
 
 		/* Link The controller and Computer */
-		cmop.linkComputer(csPort);
-		controller.toggleLogging();
-		controller.toggleTracing();
-
-		/* Create Request Generators */
-		/* RG 1 */
-		RequestGenerator rg1 =
-				new RequestGenerator(
-						"rg1",			// generator component URI
-						500.0,			// mean time between two requests
-						6000000000L,	// mean number of instructions in requests
-						RequestGeneratorManagementInboundPortURI,
-						RequestSubmissionOutboundPortURI,
-						RequestNotificationInboundPortURI) ;
-		this.addDeployedComponent(rg1) ;
-		
-		
-		this.rgmop = new RequestGeneratorManagementOutboundPort(
-				RequestGeneratorManagementOutboundPortURI,
-				new AbstractComponent() {}) ;
-		this.rgmop.publishPort() ;
-		this.rgmop.doConnection(
-				RequestGeneratorManagementInboundPortURI,
-				RequestGeneratorManagementConnector.class.getCanonicalName()) ;
-		
-		RequestGenerator rg2 =
-				new RequestGenerator(
-						"rg2",			// generator component URI
-						500.0,			// mean time between two requests
-						6000000000L,	// mean number of instructions in requests
-						RequestGeneratorManagementInboundPortURI2,
-						RequestSubmissionOutboundPortURI2,
-						RequestNotificationInboundPortURI2) ;
-		this.addDeployedComponent(rg2) ;
-		
-		rg_rsop=(RequestSubmissionOutboundPort) rg1.findPortFromURI(RequestSubmissionOutboundPortURI);
-		rg_rnip=(RequestNotificationInboundPort) rg1.findPortFromURI(RequestNotificationInboundPortURI);
-		
-
-		
-		/*RG 2 */
-		this.rgmop2 = new RequestGeneratorManagementOutboundPort(
-				RequestGeneratorManagementOutboundPortURI2,
-				new AbstractComponent() {}) ;
-		this.rgmop2.publishPort() ;
-		this.rgmop2.doConnection(
-				RequestGeneratorManagementInboundPortURI2,
-				RequestGeneratorManagementConnector.class.getCanonicalName()) ;
-		
-		rg_rsop2=(RequestSubmissionOutboundPort) rg2.findPortFromURI(RequestSubmissionOutboundPortURI2);
-		rg_rnip2=(RequestNotificationInboundPort) rg2.findPortFromURI(RequestNotificationInboundPortURI2);
-		
-		rg1.toggleLogging();
-		rg1.toggleTracing();
-		rg2.toggleLogging();
-		rg2.toggleTracing();
-
+		cmop.linkComputer(computerURI,ComputerServicesInboundPortURI,ComputerStaticStateDataInboundPortURI,ComputerDynamicStateDataInboundPortURI);
 		super.deploy();
 	}
 
@@ -252,13 +196,6 @@ public class TestAdmissionController extends AbstractCVM{
 
 	public void	shutdown() throws Exception
 	{
-		// disconnect all ports explicitly connected in the deploy phase.
-		//		this.csPort.doDisconnection() ;
-		//		this.avmPort.doDisconnection() ;
-		//		this.rsobp.doDisconnection() ;
-		//		this.nobp.doDisconnection() ;
-		//		this.rgmop.doDisconnection() ;
-
 		super.shutdown() ;
 	}
 
@@ -266,23 +203,7 @@ public class TestAdmissionController extends AbstractCVM{
 
 	public void			testScenario() throws Exception
 	{
-		/* TODO */
-		/* Send New Application to the Controller*/
 
-		Thread.sleep(2000L) ;
-		if(arop.acceptApplication(1, "rg1","a1","b1")){
-			Thread.sleep(2000L) ;
-			rgmop.startGeneration();
-			Thread.sleep(5000L);
-		}
-		if(arop.acceptApplication(2, "rg2","a2","b2")){
-			Thread.sleep(2000L) ;
-			rgmop2.startGeneration();
-		}
-		Thread.sleep(20000L);
-		rgmop.stopGeneration();
-		rgmop2.stopGeneration();
-		
 	}
 
 	/**
@@ -295,7 +216,7 @@ public class TestAdmissionController extends AbstractCVM{
 		// Uncomment next line to execute components in debug mode.
 		// AbstractCVM.toggleDebugMode() ;
 		try {
-			final TestAdmissionController tc = new TestAdmissionController() ;
+			final TestAdmissionControllerSplitting tc = new TestAdmissionControllerSplitting() ;
 			// Deploy the components
 			tc.deploy() ;
 			System.out.println("starting.......") ;

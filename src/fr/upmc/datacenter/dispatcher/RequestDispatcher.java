@@ -16,6 +16,8 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementInboundPort;
+import fr.upmc.datacenter.extension.vm.connectors.VMExtendedManagementConnector;
+import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 import fr.upmc.datacenter.software.applicationvm.connectors.ApplicationVMManagementConnector;
@@ -60,13 +62,13 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	protected RequestSubmissionInboundPort	rsip;
 	protected RequestNotificationOutboundPort rnop;
-
 	protected RequestDispatcherManagementInboundPort rdmip;
-	
 
 	protected Map<Integer,RequestSubmissionOutboundPort> rsop;
 	protected Map<Integer,RequestNotificationInboundPort> rnip;
+	
 	protected Map<Integer,ApplicationVMManagementOutboundPort> avmmops;
+	protected Map<Integer,VMExtendedManagementOutboundPort> vmemops;
 
 	/* Data Management */
 	Map<String,Long> startTime=new HashMap<String,Long>();
@@ -117,34 +119,36 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		//this.addOfferedInterface(RequestNotificationI.class);
 	}
 
-	public void linkRequestGenerator(String rg_rsopURI,String rg_rnipURI) throws Exception{
+	public void linkRequestGenerator(String requestSubmissionOutboundPortURI,String requestNotificationInboundPortURI) throws Exception{
 		this.logMessage("Linking RG to Dispatcher["+id+"] ...");
-		this.logMessage("CONNECTION : "+rg_rsopURI+" -> "+rsip.getPortURI());
-		this.logMessage("CONNECTION : "+rnop.getPortURI()+" -> "+rg_rnipURI);
-		rsip.doConnection(rg_rsopURI, RequestSubmissionConnector.class.getCanonicalName());
-		rnop.doConnection(rg_rnipURI, RequestNotificationConnector.class.getCanonicalName());
+		this.logMessage("CONNECTION : "+requestSubmissionOutboundPortURI+" -> "+rsip.getPortURI());
+		this.logMessage("CONNECTION : "+rnop.getPortURI()+" -> "+requestNotificationInboundPortURI);
+		rsip.doConnection(requestSubmissionOutboundPortURI, RequestSubmissionConnector.class.getCanonicalName());
+		rnop.doConnection(requestNotificationInboundPortURI, RequestNotificationConnector.class.getCanonicalName());
 		this.logMessage("RG linked to Dispatcher["+id+"] !"); //"+rg_rnip.getPortURI()+" | "+rg_rsop.getPortURI() );
 	}
 
 	@Override
-	public void bindVM(int id,String str_rsop,String str_rnip,String str_avmmop) throws Exception {
+	public void bindVM(int id,String requestSubmissionOutboundPortURI,String applicationVMManagementOutboundPortURI,String VMExtendedManagementOutboundPortURI) throws Exception {
 		this.logMessage("VM"+id+" : Linking...");
-		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(str_rsop, this);
-		RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(str_rnip, this);
+		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(requestSubmissionOutboundPortURI, this);
+		//RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(str_rnip, this);
 		ApplicationVMManagementOutboundPort avmmop=new ApplicationVMManagementOutboundPort(this);
-
+		VMExtendedManagementOutboundPort vmemop=new VMExtendedManagementOutboundPort(this);
 		this.addPort(rsopvm);
-		this.addPort(rnipvm);
+		//this.addPort(rnipvm);
 
 		rsopvm.publishPort();
-		rnipvm.publishPort();
+		//rnipvm.publishPort();
 
 		this.rsop.put(id, rsopvm);
-		this.rnip.put(id, rnipvm);
+		//this.rnip.put(id, rnipvm);
 
-		avmmop.doConnection(str_avmmop, ApplicationVMManagementConnector.class.getCanonicalName());
+		avmmop.doConnection(applicationVMManagementOutboundPortURI, ApplicationVMManagementConnector.class.getCanonicalName());
 		avmmops.put(id, avmmop);
-
+		
+		vmemop.doConnection(VMExtendedManagementOutboundPortURI, VMExtendedManagementConnector.class.getCanonicalName());
+		vmemops.put(id, vmemop);
 		this.logMessage("VM"+id+" : Linked !");
 	}
 
@@ -153,10 +157,12 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public void unbindVM(int id) throws Exception {
 		rsop.get(id).doDisconnection();
 		rsop.remove(id);
-		rnip.get(id).doDisconnection();
-		rnip.remove(id);
+		//rnip.get(id).doDisconnection();
+		//rnip.remove(id);
 		avmmops.get(id).doDisconnection();
 		avmmops.remove(id);
+		vmemops.get(id).doDisconnection();
+		vmemops.remove(id);
 	}
 
 	

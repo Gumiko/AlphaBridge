@@ -16,14 +16,14 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 @SuppressWarnings("unused")
-public class ControllerManagementOutboundPort extends AbstractOutboundPort implements AdmissionControllerManagementI{
-	public	ControllerManagementOutboundPort(ComponentI owner) throws Exception
+public class AdmissionControllerManagementOutboundPort extends AbstractOutboundPort implements AdmissionControllerManagementI{
+	public	AdmissionControllerManagementOutboundPort(ComponentI owner) throws Exception
 	{
 		super(AdmissionControllerManagementI.class, owner) ;
 		assert	owner != null && owner instanceof AdmissionController ;
 	}
 
-	public	ControllerManagementOutboundPort(
+	public	AdmissionControllerManagementOutboundPort(
 			String uri,
 			ComponentI owner
 			) throws Exception
@@ -32,20 +32,15 @@ public class ControllerManagementOutboundPort extends AbstractOutboundPort imple
 
 		assert	owner != null && owner instanceof AdmissionController ;
 	}
-	/**
-	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
-	 */
-	@Override
-	public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
-		((AdmissionControllerManagementI)this.connector).linkComputer(c_out);
-	}
 	
 	/**
 	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(String csopUri)
 	 */
 	@Override
-	public void linkComputer(String csopUri,String csipUri) throws Exception {
-		((AdmissionControllerManagementI)this.connector).linkComputer(csopUri,csipUri);
+	public void linkComputer(String computerURI,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,
+			String ComputerDynamicStateDataInboundPortURI) throws Exception {
+		((AdmissionControllerManagementI)this.connector).linkComputer(computerURI,ComputerServicesInboundPortURI, ComputerStaticStateDataInboundPortURI,
+				ComputerDynamicStateDataInboundPortURI);
 	}
 
 }

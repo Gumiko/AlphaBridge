@@ -14,19 +14,12 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public interface AdmissionControllerManagementI extends OfferedI,RequiredI{
-	
-	/**
-	 * add a computer which the controller will use to create new vm
-	 * @param c_out			ComputerServicesOutboundPort of the computer.
-	 * @throws Exception
-	 */
-	public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception;
-	
 	/**
 	 * add a computer which the controller will use to create new vm
 	 * @param csopURI			ComputerServicesOutboundPort URI of the computer.
 	 * @param csipURI			ComputerServicesInboundPort URI of the computer
 	 * @throws Exception
 	 */
-	public void linkComputer(String csopURI,String csipURI) throws Exception;
+	public void linkComputer(String computerURI,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,
+			String ComputerDynamicStateDataInboundPortURI) throws Exception;
 }

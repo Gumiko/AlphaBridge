@@ -16,19 +16,14 @@ public class AdmissionControllerManagementConnector
 	extends		AbstractConnector
 	implements	AdmissionControllerManagementI
 	{
-	/**
-	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(ComputerServicesOutboundPort c_out) 
-	 */
-		@Override
-		public void linkComputer(ComputerServicesOutboundPort c_out) throws Exception {
-			((AdmissionControllerManagementI)this.offering).linkComputer(c_out);
-		}
 		/**
 		 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(String csopURI)
 		 */
 		@Override
-		public void linkComputer(String csopURI,String csipURI) throws Exception {
-			((AdmissionControllerManagementI)this.offering).linkComputer(csopURI,csipURI);
+		public void linkComputer(String computerURI,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,
+				String ComputerDynamicStateDataInboundPortURI) throws Exception {
+			((AdmissionControllerManagementI)this.offering).linkComputer(computerURI,ComputerServicesInboundPortURI, ComputerStaticStateDataInboundPortURI,
+					 ComputerDynamicStateDataInboundPortURI);
 		}
 	}
 

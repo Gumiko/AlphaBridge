@@ -39,9 +39,9 @@ public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort
 		 * @see fr.upmc.datacenter.controller.interfaces.RequestDispatcherManagementI#deployVM(int rd, String RequestDispatcherURIDVM)
 		 */
 		@Override
-		public void bindVM(int id, String str_rsop, String str_rnip, String str_avmmop) throws Exception {
+		public void bindVM(int id, String requestSubmissionOutboundPortURI, String applicationVMManagementOutboundPortURI,String VMExtendedManagementOutboundPortURI) throws Exception {
 			final RequestDispatcher c = (RequestDispatcher) this.owner;
-			c.bindVM(id,str_rsop,str_rnip, str_avmmop);
+			c.bindVM(id,requestSubmissionOutboundPortURI, applicationVMManagementOutboundPortURI,VMExtendedManagementOutboundPortURI);
 			
 		}
 		/**
