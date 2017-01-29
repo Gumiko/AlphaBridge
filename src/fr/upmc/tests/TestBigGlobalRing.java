@@ -59,7 +59,7 @@ public class TestBigGlobalRing extends AbstractCVM{
 	int lastRG=0;
 
 	int nbGenerator=30;
-	int nbComputer=50;
+	int nbComputer=60;
 
 	/** Port connected to the computer component to access its services.	*/
 	protected ComputerServicesOutboundPort				csPort ;
@@ -135,7 +135,7 @@ public class TestBigGlobalRing extends AbstractCVM{
 					new RequestGenerator(
 							"rg"+i,			// generator component URI
 							1000.0,			// mean time between two requests
-							2000000000L,	// mean number of instructions in requests
+							3000000000L,	// mean number of instructions in requests
 							RequestGeneratorManagementInboundPortURI+i,
 							RequestSubmissionOutboundPortURI+i,
 							RequestNotificationInboundPortURI+i) ;

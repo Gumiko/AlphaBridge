@@ -144,7 +144,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		case HIGHER :
 			factor = (time/StaticData.AVERAGE_TARGET);
 			number =Math.max(1, (int)(cores*factor));
-			number =Math.max(StaticData.MAX_ALLOCATION, number);
+			number =Math.min(StaticData.MAX_ALLOCATION, number);
 			allocate(number);
 			processAllocation(factor,number,vms,time,nbreq,cores);
 			rdmop.resetRequestNumber();
@@ -152,7 +152,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		case LOWER :
 			factor = (StaticData.AVERAGE_TARGET/time);
 			number =Math.max(1, (int)(cores-(cores/factor)));
-			number =Math.max(StaticData.MAX_DEALLOCATION, number);
+			number =Math.min(StaticData.MAX_DEALLOCATION, number);
 			deallocate(number);
 			if(vms.size()==1)
 				if(vms.get(0).getNbCore()==2)
@@ -206,13 +206,13 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 						rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
 						int allocated=rdmop.addCore(waitingAllocation, v.getVMUri());
 						waitingAllocation=waitingAllocation-v.getNbCore()-allocated;
-						this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED new VM : "+v.getVMUri()+ "allocated "+allocated+" cores");
+						this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED new VM : "+v.getVMUri()+ " allocated "+allocated+" cores");
 					}else if(!vmFree.isEmpty()){
 						VMData v = vmFree.remove(0);
 						rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
 						int allocated=rdmop.addCore(waitingAllocation, v.getVMUri());
 						waitingAllocation=waitingAllocation-v.getNbCore()-allocated;
-						this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED new VM : "+v.getVMUri()+ "allocated "+allocated+" cores");
+						this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED new VM : "+v.getVMUri()+ " allocated "+allocated+" cores");
 					}else{
 						break;
 					}
