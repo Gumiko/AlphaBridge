@@ -32,11 +32,12 @@ public interface VMExtendedManagementI extends OfferedI,RequiredI{
 	public AllocatedCore[] removeCore(int number);
 	
 	/***
-	 * add the cores to vm
-	 * @param ac         AllocatedCore to be added
+	 * Try to add cores to vm
+	 * @param number         number of AllocatedCore to be added
 	 * @throws Exception
+	 * @return number of core allocated
 	 */
-	public void addCore(AllocatedCore[] ac) throws Exception;
+	public int addCore(int number) throws Exception;
 	
 	/***
 	 * remove all vm cores

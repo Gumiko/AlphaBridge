@@ -58,8 +58,8 @@ public class TestGlobalRing extends AbstractCVM{
 	int lastComputer=1;
 	int lastRG=0;
 
-	int nbGenerator=6;
-	int nbComputer=8;
+	int nbGenerator=30;
+	int nbComputer=50;
 
 	/** Port connected to the computer component to access its services.	*/
 	protected ComputerServicesOutboundPort				csPort ;
@@ -222,7 +222,7 @@ public class TestGlobalRing extends AbstractCVM{
 				}
 			}).start() ;
 			// Sleep to let the test scenario execute to completion.
-			Thread.sleep(90000L) ;
+			Thread.sleep(350000L) ;
 			// Shut down the application.
 			System.out.println("shutting down...") ;
 			tc.shutdown() ;

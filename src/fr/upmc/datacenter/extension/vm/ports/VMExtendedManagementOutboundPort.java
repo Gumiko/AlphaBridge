@@ -36,8 +36,8 @@ implements	VMExtendedManagementI{
 	}
 
 	@Override
-	public void addCore(AllocatedCore[] ac) throws Exception {
-		 ((VMExtendedManagementI)this.connector).addCore(ac);
+	public int addCore(int number) throws Exception {
+		 return ((VMExtendedManagementI)this.connector).addCore(number);
 		
 	}
 

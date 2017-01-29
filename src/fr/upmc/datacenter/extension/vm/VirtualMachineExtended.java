@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import fr.upmc.datacenter.extension.vm.interfaces.VMExtendedManagementI;
 import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementInboundPort;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
+import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
+import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
 import fr.upmc.datacenter.hardware.processors.ports.ProcessorServicesOutboundPort;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
@@ -16,10 +18,23 @@ import fr.upmc.datacenter.software.connectors.RequestNotificationConnector;
 
 public class VirtualMachineExtended extends ApplicationVM implements VMExtendedManagementI{
 	protected VMExtendedManagementInboundPort vmemip;
-	public VirtualMachineExtended(String vmURI, String applicationVMManagementInboundPortURI,
+	protected String computerURI;
+	protected String computerServicesInboundPortURI;
+	
+	protected ComputerServicesOutboundPort computerServicesOutboundPort;
+	
+	public VirtualMachineExtended(String computerURI,String computerServicesInboundPortURI,String vmURI, String applicationVMManagementInboundPortURI,
 			String VMExtendedManagementInboundPortURI,String requestSubmissionInboundPortURI, String requestNotificationOutboundPortURI) throws Exception {
 		super(vmURI, applicationVMManagementInboundPortURI, requestSubmissionInboundPortURI,
 				requestNotificationOutboundPortURI);
+		this.computerURI=computerURI;
+		this.computerServicesInboundPortURI=computerServicesInboundPortURI;
+		computerServicesOutboundPort=new ComputerServicesOutboundPort(this);
+		this.addPort(computerServicesOutboundPort);
+		computerServicesOutboundPort.publishPort();
+		
+		computerServicesOutboundPort.doConnection(computerServicesInboundPortURI, ComputerServicesConnector.class.getCanonicalName());
+		
 		vmemip=new VMExtendedManagementInboundPort(VMExtendedManagementInboundPortURI, this);
 		this.addPort(vmemip);
 		vmemip.publishPort();
@@ -68,8 +83,11 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 
 	}
 
-	public void addCore(AllocatedCore[] ac) throws Exception{
-		this.allocateCores(ac);
+	public int addCore(int number) throws Exception{
+		AllocatedCore[] acs = this.computerServicesOutboundPort.allocateCores(number);
+		int allocated = acs.length;
+		this.allocateCores(acs);
+		return allocated;
 	}
 
 	public AllocatedCore[] removeAll(){

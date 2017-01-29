@@ -36,9 +36,9 @@ public class VMExtendedManagementInboundPort extends AbstractOutboundPort implem
 	}
 
 	@Override
-	public void addCore(AllocatedCore[] ac) throws Exception {
+	public int addCore(int number) throws Exception {
 		final VirtualMachineExtended c = (VirtualMachineExtended) this.owner;
-		c.addCore(ac);
+		return c.addCore(number);
 		
 	}
 

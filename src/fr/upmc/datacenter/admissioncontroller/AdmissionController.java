@@ -304,7 +304,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		for(int i=0;i<(nbCores*nbProc)/2;i++){
 			AllocatedCore[] acs=csPort.allocateCores(PARAMETER_INITIAL_NB_CORE);
 			if(acs.length!=0){
-				VirtualMachineExtended vme=new VirtualMachineExtended(VM_URI_PREFIX+(VM_ID),VM_AVMMIP_PREFIX+VM_ID,VM_VMEMIP_PREFIX+VM_ID,VM_RSIP_PREFIX+VM_ID,VM_RNOP_PREFIX+VM_ID);
+				VirtualMachineExtended vme=new VirtualMachineExtended(computerURI,computerServicesInboundPortURI,VM_URI_PREFIX+(VM_ID),VM_AVMMIP_PREFIX+VM_ID,VM_VMEMIP_PREFIX+VM_ID,VM_RSIP_PREFIX+VM_ID,VM_RNOP_PREFIX+VM_ID);
 				VM_ID++;
 				vme.allocateCores(acs);
 				synchronized(o){

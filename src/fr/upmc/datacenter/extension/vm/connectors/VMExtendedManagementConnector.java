@@ -42,8 +42,8 @@ public class VMExtendedManagementConnector
 	 * @see fr.upmc.datacenter.extension.vm.interfaces.VMExtendedManagementI#addCore(fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore[])
 	 */
 	@Override
-	public void addCore(AllocatedCore[] ac) throws Exception {
-		((VMExtendedManagementI)this.offering).addCore(ac);
+	public int  addCore(int number) throws Exception {
+		return ((VMExtendedManagementI)this.offering).addCore(number);
 		
 	}
 
