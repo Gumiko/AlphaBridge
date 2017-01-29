@@ -37,10 +37,12 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 		//			proc.put(e.getKey(), e.getValue().getClientPortURI());
 		//			
 		//		}
+		int nbCore=0;
 		for(AllocatedCore ac: this.allocatedCoresIdleStatus.keySet()){
+			nbCore++;
 			proc.put(ac.processorURI, ac.processorInboundPortURI);
 		}
-		return new VMData(c,proc,this.applicationVMManagementInboundPort.getPortURI(),this.vmemip.getPortURI(),this.requestSubmissionInboundPort.getPortURI());
+		return new VMData(nbCore,this.vmURI,proc,this.applicationVMManagementInboundPort.getPortURI(),this.vmemip.getPortURI(),this.requestSubmissionInboundPort.getPortURI());
 	}
 
 	public AllocatedCore[] removeCore(int number){

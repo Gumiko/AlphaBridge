@@ -304,7 +304,8 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		for(int i=0;i<(nbCores*nbProc)/2;i++){
 			AllocatedCore[] acs=csPort.allocateCores(PARAMETER_INITIAL_NB_CORE);
 			if(acs.length!=0){
-				VirtualMachineExtended vme=new VirtualMachineExtended(VM_URI_PREFIX+VM_ID,VM_AVMMIP_PREFIX+VM_ID,VM_VMEMIP_PREFIX+VM_ID,VM_RSIP_PREFIX+VM_ID,VM_RNOP_PREFIX+VM_ID);
+				VirtualMachineExtended vme=new VirtualMachineExtended(VM_URI_PREFIX+(VM_ID),VM_AVMMIP_PREFIX+VM_ID,VM_VMEMIP_PREFIX+VM_ID,VM_RSIP_PREFIX+VM_ID,VM_RNOP_PREFIX+VM_ID);
+				VM_ID++;
 				vme.allocateCores(acs);
 				synchronized(o){
 					if(Reserved.size()<4)
@@ -320,7 +321,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 		this.logMessage("Computer linked !");
 		this.logMessage("------------------------------");
-		VM_ID++;
+		//VM_ID++;
 		COMP_ID++;
 	}
 
@@ -394,14 +395,14 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 	public void acceptRingDynamicData(String requestDispatcherURI, RingDynamicStateI currentDynamicState)
 			throws Exception {
 		synchronized(o){
-			this.logMessage("[----DATA----]"+this.admissionControllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
+			//this.logMessage("[----DATA----]"+this.admissionControllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
 			
 			if(!currentDynamicState.getVMDataList().isEmpty())
 				Free.addAll(currentDynamicState.getVMDataList());
 			while(Reserved.size() < MAX_VM_RESERVED && !Free.isEmpty()){
 				Reserved.add(Free.remove(0));
 			}
-			this.logMessage("[----DATA----]"+this.admissionControllerURI+ " FREE["+Free.size()+"] | RESERVED["+Reserved.size()+"]");
+			//this.logMessage("[----DATA----]"+this.admissionControllerURI+ " FREE["+Free.size()+"] | RESERVED["+Reserved.size()+"]");
 		}
 
 	}

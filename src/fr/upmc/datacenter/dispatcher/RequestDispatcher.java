@@ -17,6 +17,7 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherActuatorInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementInboundPort;
+import fr.upmc.datacenter.extension.vm.VMData;
 import fr.upmc.datacenter.extension.vm.connectors.VMExtendedManagementConnector;
 import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
@@ -36,32 +37,32 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 
 
 /**
-* The class <code>RequestDispatcher</code> implements the component representing
-* a Request Dispatcher in the data center.
-*
-* <p><strong>Description</strong></p>
-* 
-* The Request Dispatcher (RD) component receive the requests of the request generator
-* and dispatch them to the Application VM allocated to him
-* He's Linked to a Controller and the Request Dispatcher send him data about
-* the average time that make the requests to finish. 
-* 
-* 
-* AVM uses cores on processors to execute requests. To pass the request to
-* the cores, it requires the interface <code>ProcessorServicesI</code>
-* through <code>ProcessorServicesOutboundPort</code>. It receives the
-* notifications of the end of execution of the requests by offering the
-* interface <code>ProcessorServicesNotificationI</code> through the
-* inbound port <code>ProcessorServicesNotificationInboundPort</code>.
-* 
-* <p>Created on : 2016-2017</p>
-* 
-* @author	Cédric Ribeiro et Mokrane Kadri
-*/
+ * The class <code>RequestDispatcher</code> implements the component representing
+ * a Request Dispatcher in the data center.
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ * The Request Dispatcher (RD) component receive the requests of the request generator
+ * and dispatch them to the Application VM allocated to him
+ * He's Linked to a Controller and the Request Dispatcher send him data about
+ * the average time that make the requests to finish. 
+ * 
+ * 
+ * AVM uses cores on processors to execute requests. To pass the request to
+ * the cores, it requires the interface <code>ProcessorServicesI</code>
+ * through <code>ProcessorServicesOutboundPort</code>. It receives the
+ * notifications of the end of execution of the requests by offering the
+ * interface <code>ProcessorServicesNotificationI</code> through the
+ * inbound port <code>ProcessorServicesNotificationInboundPort</code>.
+ * 
+ * <p>Created on : 2016-2017</p>
+ * 
+ * @author	Cédric Ribeiro et Mokrane Kadri
+ */
 public class RequestDispatcher extends AbstractComponent
 implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHandlerI,RequestNotificationHandlerI,PushModeControllerI
 {
-	
+
 
 	//	/** RequestDispatcher data inbound port through which it pushes its static data.	*/
 	//	protected RequestDispatcherStaticStateDataInboundPort
@@ -84,8 +85,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	protected String rdUri;
 	protected int idVM;
 	protected int id;
-	
-	
+
+
 	protected int notificationid;
 
 	protected RequestSubmissionInboundPort	rsip;
@@ -99,7 +100,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	int lastVM;
 	private ArrayList<RequestSubmissionOutboundPort> vms;
-	
+
 	/* Data Management */
 	Map<String,Long> startTime=new HashMap<String,Long>();
 	Map<String,Long> endTime=new HashMap<String,Long>();
@@ -108,7 +109,8 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	int numberOfRequests;
 	int totalTime;
 	int averageTime;
-	
+	private Object o=new Object();
+
 	public RequestDispatcher(int id, String rdURI,String requestDispatcherRequestSubmissionInboundPortURI,String requestDispatcherActuatorInboundPort,String requestDispatcherDynamicStateDataInboundPort,String requestDispatcherManagementInboundPort) throws Exception{
 		/* Init Request Dispatcher */
 		super(1, 1) ;
@@ -121,7 +123,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.rnip=new HashMap<String,RequestNotificationInboundPort>();
 		this.avmmops = new HashMap<String,ApplicationVMManagementOutboundPort> ();
 		this.vmemops = new HashMap<String,VMExtendedManagementOutboundPort> ();
-		
+
 		/*RD Ports connection with RG*/
 		this.addOfferedInterface(RequestSubmissionI.class);
 		this.rsip = new RequestSubmissionInboundPort(requestDispatcherRequestSubmissionInboundPortURI, this);
@@ -137,7 +139,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.rddsdip=new RequestDispatcherDynamicStateDataInboundPort(requestDispatcherDynamicStateDataInboundPort, this);
 		this.addPort(rddsdip) ;
 		this.rddsdip.publishPort();
-		
+
 		/*Actuator*/
 		this.rdaip=new RequestDispatcherActuatorInboundPort(requestDispatcherActuatorInboundPort,this);
 		this.addPort(rdaip);
@@ -149,7 +151,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.rdmip=new RequestDispatcherManagementInboundPort(requestDispatcherManagementInboundPort,this);
 		this.addPort(rdmip);
 		this.rdmip.publishPort();
-	
+
 		/*Test*/
 		//this.addRequiredInterface(RequestSubmissionI.class);
 		//this.addOfferedInterface(RequestNotificationI.class);
@@ -164,38 +166,44 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	@Override
 	public void bindVM(String vmUri,String vmRequestSubmissionInboundPortURI,String applicationVMManagementInboundPortURI,String VMExtendedManagementInboundPortURI) throws Exception {
-		this.logMessage("VM"+id+" : Linking...");
+		this.logMessage("VM["+vmUri+"] : Linking...");
 		String notificationURI=rdUri+"NOTIF"+(notificationid++);
-		
+
 		VMExtendedManagementOutboundPort vmemop=new VMExtendedManagementOutboundPort(this);
 		RequestSubmissionOutboundPort rsopvm = new RequestSubmissionOutboundPort(this);
 		ApplicationVMManagementOutboundPort avmmop=new ApplicationVMManagementOutboundPort(this);
 		RequestNotificationInboundPort rnipvm = new RequestNotificationInboundPort(notificationURI,this);
-		
+
 		this.addPort(vmemop);
 		this.addPort(rsopvm);
 		this.addPort(avmmop);
 		this.addPort(rnipvm);
-		
+
 		vmemop.publishPort();
 		rsopvm.publishPort();
 		avmmop.publishPort();
 		rnipvm.publishPort();
-		
+
 		vmemop.doConnection(VMExtendedManagementInboundPortURI, VMExtendedManagementConnector.class.getCanonicalName());
 		rsopvm.doConnection(vmRequestSubmissionInboundPortURI, RequestSubmissionConnector.class.getCanonicalName());
 		avmmop.doConnection(applicationVMManagementInboundPortURI, ApplicationVMManagementConnector.class.getCanonicalName());
-		
+
 		vmemop.connectNotificationPort(notificationURI);
-		
+
 		rsop.put(vmUri, rsopvm);
 		avmmops.put(vmUri, avmmop);
 		vmemops.put(vmUri, vmemop);
 		rnip.put(vmUri, rnipvm);
-		
+
 		vms=new ArrayList<>(rsop.values());
-		
+
 		this.logMessage("VM"+id+" : Linked !");
+
+		synchronized(o){
+			totalTime=0;
+			numberOfRequests=0;
+			lastTime.clear();
+		}
 	}
 
 
@@ -209,12 +217,11 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		avmmops.remove(vmUri);
 		vmemops.get(vmUri).doDisconnection();
 		vmemops.remove(vmUri);
-		
 		vms=new ArrayList<>(rsop.values());
 	}
 
-	
-	
+
+
 	@Override
 	public void startUnlimitedPushing(int interval) throws Exception {
 		// first, send the static state if the corresponding port is connected
@@ -268,7 +275,7 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 			this.rddsdip.send(rdds) ;
 		}
 	}
-	
+
 	public void			sendDynamicState(
 			final int interval,
 			int numberOfRemainingPushes) throws Exception{
@@ -303,16 +310,22 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	}
 
 
-	public RequestDispatcherDynamicStateI getDynamicState() throws UnknownHostException {
-		long average = (totalTime/numberOfRequests);
-		return new RequestDispatcherDynamicState(average);
+	public RequestDispatcherDynamicStateI getDynamicState() throws Exception {
+		long average = 0;
+		if(numberOfRequests>0)
+			average=(totalTime/numberOfRequests);
+		ArrayList<VMData> vms=new ArrayList<VMData>();
+		for(VMExtendedManagementOutboundPort man : vmemops.values()){
+			vms.add(man.getData());
+		}
+		return new RequestDispatcherDynamicState(average,numberOfRequests,vms);
 	}
 
 
 	public void	acceptRequestSubmission(final RequestI r)
 			throws Exception
 	{
-		
+
 		//this.logMessage("Dispatcher["+id+"] : "+r.getRequestURI() +" => "+vms.get(lastVM).getPortURI());
 		vms.get(lastVM).submitRequest(r);
 		lastVM=(++lastVM)%vms.size();
@@ -320,20 +333,22 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 
 	public void	acceptRequestSubmissionAndNotify(final RequestI r) throws Exception
 	{
-		//this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" =====> "+vms.get(lastVM).getPortURI());
+		//this.logMessage("Dispatcher&N["+id+"] : "+r.getRequestURI() +" =====> "+vms.get(lastVM).getServerPortURI());
 		vms.get(lastVM).submitRequestAndNotify(r);
 		startTime.put(r.getRequestURI(), System.currentTimeMillis());
 		lastVM=(++lastVM)%vms.size();
 	}
 
 	@Override
-	public void acceptRequestTerminationNotification(RequestI r) throws Exception {
+	public synchronized void acceptRequestTerminationNotification(RequestI r) throws Exception {
 		//this.logMessage("Dispatcher&T["+id+"] : "+r.getRequestURI() +" => "+rnop.getPortURI());
 		this.rnop.notifyRequestTermination(r);
 		endTime.put(r.getRequestURI(), System.currentTimeMillis());
-		lastTime.put(r.getRequestURI(), endTime.get(r.getRequestURI())-startTime.get(r.getRequestURI()));
-		totalTime+=lastTime.get(r.getRequestURI());
-		numberOfRequests++;
+		synchronized(o){
+			lastTime.put(r.getRequestURI(), endTime.get(r.getRequestURI())-startTime.get(r.getRequestURI()));
+			totalTime+=lastTime.get(r.getRequestURI());
+			numberOfRequests++;
+		}
 	}
 
 	public long getAverageTime(){
