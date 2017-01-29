@@ -10,7 +10,7 @@ import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
  * to create new VM.
  *
  * <p><strong>Description</strong></p>
- * 
+ * A Factory to build VMs
  * 
  * @author	Cédric Ribeiro et Mokrane Kadri
  * @version	$Name$ -- $Revision$ -- $Date$

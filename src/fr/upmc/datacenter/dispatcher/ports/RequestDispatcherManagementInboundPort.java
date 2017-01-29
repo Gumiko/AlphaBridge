@@ -5,13 +5,13 @@ import fr.upmc.components.ports.AbstractInboundPort;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 /**
- * The class <code>RequestDispatcherManagementInboundPort</code>
- *
- * <p><strong>Description</strong></p>
- * 
- * 
- * @author	Cédric Ribeiro et Mokrane Kadri
- */
+* The class <code>RequestDispatcherManagementInboundPort</code> implements the
+ * inbound port through which the component management methods are called.
+* 
+* <p>Created on : 2016-2017</p>
+* 
+* @author	Cédric Ribeiro et Mokrane Kadri
+*/
 public class RequestDispatcherManagementInboundPort extends		AbstractInboundPort implements RequestDispatcherManagementI{
 		private static final long serialVersionUID = 1L;
 

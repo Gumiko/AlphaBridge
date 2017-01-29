@@ -6,8 +6,7 @@ import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 /**
 * The class <code>ControllerManagementInboundPort</code> implements the
-* inbound port requiring the interface <code>ControllerManagementI</code>.
-*
+ * inbound port through which the component management methods are called.
 * 
 * <p>Created on : 2016-2017</p>
 * 
@@ -16,6 +15,11 @@ import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 public class ControllerManagementInboundPort extends AbstractInboundPort implements ControllerManagementI{
 	private static final long serialVersionUID = 1L;
 
+	/***
+	 * 
+	 * @param owner     owner component
+	 * @throws Exception
+	 */
 	public		ControllerManagementInboundPort(
 			ComponentI owner
 			) throws Exception
@@ -24,7 +28,12 @@ public class ControllerManagementInboundPort extends AbstractInboundPort impleme
 
 		assert	owner != null && owner instanceof Controller ;
 	}
-
+	
+	/***
+	 * @param uri       uri of the component
+	 * @param owner     owner component
+	 * @throws Exception
+	 */
 	public				ControllerManagementInboundPort(
 			String uri,
 			ComponentI owner

@@ -5,8 +5,7 @@ import fr.upmc.components.ports.AbstractOutboundPort;
 import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 /**
 * The class <code>ControllerManagementOutboundPort</code> implements the
-* outbound port requiring the interface <code>ControllerManagementI</code>.
-*
+ * inbound port through which the component management methods are called.
 * 
 * <p>Created on : 2016-2017</p>
 * 
@@ -15,7 +14,11 @@ import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 public class ControllerManagementOutboundPort extends AbstractOutboundPort
 implements	ControllerManagementI{
 
-
+    /***
+     * 
+     * @param owner       owner component
+     * @throws Exception
+     */
 	public		ControllerManagementOutboundPort(
 			ComponentI owner
 			) throws Exception
@@ -25,6 +28,12 @@ implements	ControllerManagementI{
 		assert	owner != null ;
 	}
 
+	/***
+	 *  
+	 * @param uri             uri of the component
+	 * @param owner           owner component
+	 * @throws Exception
+	 */
 	public				ControllerManagementOutboundPort(
 			String uri,
 			ComponentI owner

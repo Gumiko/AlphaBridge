@@ -7,8 +7,31 @@ import java.util.Set;
 
 import fr.upmc.datacenter.hardware.computers.Computer;
 
+
+/**
+ * The class <code>FactoryComputer</code> 
+ *
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ * A  factory in charge of creating computer components
+
+ * @author	Cédric Ribeiro et Mokrane Kadri
+ *
+ */
 public class FactoryComputer {
 
+	/**
+	 * 
+	 * @param computerURI                             URI of the computer newly created computer.
+	 * @param numberOfProcessors                      the number of processor of the new computer.
+	 * @param numberOfCores                           the number of cores per processor
+	 * @param ComputerServicesInboundPortURI          URI of the VM management inbound port.
+	 * @param ComputerStaticStateDataInboundPortURI   URI of the computer's static state data inbound port.
+	 * @param ComputerDynamicStateDataInboundPortURI  URI of the computer's dynamic state data inbound port.
+	 * @return                                        the newly created computer
+	 * @throws Exception
+	 */
 	public static Computer createComputer(String computerURI,int numberOfProcessors,int numberOfCores,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,String ComputerDynamicStateDataInboundPortURI) throws Exception{
 		Set<Integer> admissibleFrequencies = new HashSet<Integer>() ;
 		admissibleFrequencies.add(1500) ;	// Cores can run at 1,5 GHz

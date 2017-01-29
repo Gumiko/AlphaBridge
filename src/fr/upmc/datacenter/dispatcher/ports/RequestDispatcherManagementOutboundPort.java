@@ -8,10 +8,10 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 /**
- * The class <code>RequestDispatcherManagementOutboundPort</code>
- *
- * <p><strong>Description</strong></p>
+ * The class <code>RequestDispatcherManagementOutboundPort</code> implements the
+ * outbound port through which the component management methods are called.
  * 
+ * <p>Created on : 2016-2017</p>
  * 
  * @author	Cédric Ribeiro et Mokrane Kadri
  */
@@ -20,7 +20,11 @@ public class RequestDispatcherManagementOutboundPort
 extends		AbstractOutboundPort
 implements	RequestDispatcherManagementI{
 
+	/***
 
+	 * @param owner     owner component
+	 * @throws Exception
+	 */
 	public		RequestDispatcherManagementOutboundPort(
 			ComponentI owner
 			) throws Exception
@@ -30,6 +34,11 @@ implements	RequestDispatcherManagementI{
 		assert	owner != null && owner instanceof Controller ;
 	}
 
+	/***
+	 * @param uri       uri of the component
+	 * @param owner     owner component
+	 * @throws Exception
+	 */
 	public				RequestDispatcherManagementOutboundPort(
 			String uri,
 			ComponentI owner

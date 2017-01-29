@@ -7,6 +7,10 @@ import java.util.List;
 import fr.upmc.datacenter.extension.vm.VMData;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
 
+/**
+ * @author Mokrane
+ *
+ */
 public class RingDynamicState implements RingDynamicStateI{
 
 	private static final long serialVersionUID = 1L ;
@@ -24,16 +28,28 @@ public class RingDynamicState implements RingDynamicStateI{
 		this.timestamperIP = InetAddress.getLocalHost().getHostAddress() ;
 	}
 	
+	
+	/* 
+	 * @see fr.upmc.datacenter.interfaces.TimeStampingI#getTimeStamp()
+	 */
 	@Override
 	public long getTimeStamp() {
 		return timestamp;
 	}
 
+	
+	/* 
+	 * @see fr.upmc.datacenter.interfaces.TimeStampingI#getTimeStamperId()
+	 */
 	@Override
 	public String getTimeStamperId() {
 		return timestamperIP;
 	}
 
+	
+	/*
+	 * @see fr.upmc.datacenter.ring.interfaces.RingDynamicStateI#getVMDataList()
+	 */
 	@Override
 	public List<VMData> getVMDataList() {
 		return vmDataList;

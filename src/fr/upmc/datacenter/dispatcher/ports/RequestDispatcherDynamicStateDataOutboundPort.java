@@ -6,7 +6,13 @@ import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherSensorI;
 import fr.upmc.datacenter.hardware.computers.interfaces.ComputerStateDataConsumerI;
 import fr.upmc.datacenter.ports.AbstractControlledDataOutboundPort;
-
+/**
+ * The class <code>RequestDispatcherDynamicStateDataOutboundPort</code> implements a data
+ * outbound port offering the <code>RequestDispatcherDynamicStateI</code> interface.
+ *
+ * <p><strong>Description</strong></p>
+ *  * @author	Cédric Ribeiro et Mokrane Kadri
+ */
 public class RequestDispatcherDynamicStateDataOutboundPort extends		AbstractControlledDataOutboundPort
 {
 	private static final long	serialVersionUID = 1L ;

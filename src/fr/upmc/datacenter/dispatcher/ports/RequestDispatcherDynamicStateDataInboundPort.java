@@ -5,7 +5,13 @@ import fr.upmc.components.interfaces.DataOfferedI;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.hardware.computers.Computer;
 import fr.upmc.datacenter.ports.AbstractControlledDataInboundPort;
-
+/**
+ * The class <code>RequestDispatcherDynamicStateDataInboundPort</code> implements a data
+ * inbound port offering the <code>RequestDispatcherDynamicStateI</code> interface.
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ */
 public class RequestDispatcherDynamicStateDataInboundPort
 	extends		AbstractControlledDataInboundPort
 	{

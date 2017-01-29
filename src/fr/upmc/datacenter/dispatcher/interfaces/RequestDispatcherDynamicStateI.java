@@ -11,8 +11,22 @@ public interface RequestDispatcherDynamicStateI extends 	DataOfferedI.DataI,
 DataRequiredI.DataI,
 TimeStampingI{
 
+	/***
+	 * 
+	 * @return
+	 */
 	long getAverageTime();
-	ArrayList<VMData> getVMDatas();
-	int getNbreq();
 	
+	/***
+	 * 
+	 * @return
+	 */
+	ArrayList<VMData> getVMDatas();
+	
+	/***
+	 * 
+	 * @return the number of requests
+	 */
+	int getNbreq();
+
 }
