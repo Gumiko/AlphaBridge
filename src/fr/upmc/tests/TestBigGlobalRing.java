@@ -58,8 +58,11 @@ public class TestBigGlobalRing extends AbstractCVM{
 	int lastComputer=1;
 	int lastRG=0;
 
-	int nbGenerator=30;
+	int nbGenerator=100;
+	
 	int nbComputer=60;
+	int processorPerComputer=6;
+	int coresPerProcessor=6;
 
 	/** Port connected to the computer component to access its services.	*/
 	protected ComputerServicesOutboundPort				csPort ;
@@ -112,7 +115,7 @@ public class TestBigGlobalRing extends AbstractCVM{
 				AdmissionControllerManagementConnector.class.getCanonicalName()) ;
 
 		for(int i=0;i<nbComputer;i++){
-			Computer c = FactoryComputer.createComputer("computerURI"+lastComputer, 12, 8, ComputerServicesInboundPortURI+lastComputer, ComputerStaticStateDataInboundPortURI+lastComputer, ComputerDynamicStateDataInboundPortURI+lastComputer);
+			Computer c = FactoryComputer.createComputer("computerURI"+lastComputer, this.processorPerComputer, this.coresPerProcessor, ComputerServicesInboundPortURI+lastComputer, ComputerStaticStateDataInboundPortURI+lastComputer, ComputerDynamicStateDataInboundPortURI+lastComputer);
 			this.addDeployedComponent(c) ;
 			/* Link The controller and Computer */
 			cmop.linkComputer("computerURI"+lastComputer,ComputerServicesInboundPortURI+lastComputer,ComputerStaticStateDataInboundPortURI+lastComputer,ComputerDynamicStateDataInboundPortURI+lastComputer);
@@ -186,7 +189,7 @@ public class TestBigGlobalRing extends AbstractCVM{
 				Thread.sleep(2000L);
 			}
 		}
-		Thread.sleep(90000L);
+		Thread.sleep(100000L);
 		for(int i=0;i<nbGenerator;i++){
 			rgmop.get(i).stopGeneration();
 		}
