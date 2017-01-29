@@ -2,6 +2,7 @@ package fr.upmc.datacenter.controller;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +19,10 @@ import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 import fr.upmc.datacenter.controller.ports.ControllerManagementInboundPort;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.dispatcher.RequestDispatcherDynamicState;
-import fr.upmc.datacenter.dispatcher.connectors.RequestDispatcherActuatorConnector;
 import fr.upmc.datacenter.dispatcher.connectors.RequestDispatcherManagementConnector;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherSensorI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherStaticStateI;
-import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherActuatorOutboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementOutboundPort;
@@ -52,21 +51,11 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	 *  components.															*/
 	protected final RequestDispatcherDynamicStateDataOutboundPort rddsdop;
 
-	//	/** ports of the controller receiving the static data from its processor
-	//	 *  components.															*/
-	//	protected final RequestDispatcherStaticStateDataOutboundPort rdssdop ;
-
-
 	String controllerURI;
 	int controllerID;
 
-
 	String requestDispatcherURI;
 	RequestDispatcherManagementOutboundPort rdmop;
-	RequestDispatcherActuatorOutboundPort rdaop;
-
-	Map<Integer,ApplicationVMManagementOutboundPort> mapVMManagement;
-	Map<Integer,VMExtendedManagementOutboundPort> mapVMEManagement;
 
 	ControllerManagementInboundPort cmip;
 
@@ -76,16 +65,13 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	String nextControllerUri;
 	String previousControllerUri;
 
-	List<AllocatedCore> acReserved;
-	List<AllocatedCore> acFree;
-
 	List<VMData> vmReserved;
 	List<VMData> vmFree;
 
 	int idVM=1;
 	private Object o = new Object();
 	int waitingAllocation=0;
-	int waitingDisallocation=0;
+	int waitingDeallocation=0;
 
 	/** future of the task scheduled to push dynamic data.					*/
 	protected ScheduledFuture<?>			pushingFuture ;
@@ -98,14 +84,8 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		this.addPort(cmip);
 		cmip.publishPort();
 
-		mapVMManagement=new HashMap<Integer,ApplicationVMManagementOutboundPort>();
-		mapVMEManagement=new HashMap<Integer,VMExtendedManagementOutboundPort>();
-
 		vmReserved = new ArrayList<VMData>();
 		vmFree = new ArrayList<VMData>();
-
-		acReserved = new ArrayList<AllocatedCore>();
-		acFree=new ArrayList<AllocatedCore>();
 
 		this.controllerURI=controllerURI;
 		/*Link the controller to the Request Dispatcher */
@@ -113,12 +93,6 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		this.addPort(rdmop);
 		rdmop.publishPort();
 		rdmop.doConnection(rdmipURI, RequestDispatcherManagementConnector.class.getCanonicalName());
-
-		rdaop=new RequestDispatcherActuatorOutboundPort(this);
-		this.addPort(rdaop);
-		rdaop.publishPort();
-		rdaop.doConnection(rdaipURI, RequestDispatcherActuatorConnector.class.getCanonicalName());
-
 
 		rddsdop=new RequestDispatcherDynamicStateDataOutboundPort(this,controllerURI);
 		this.addPort(rddsdop);
@@ -159,90 +133,135 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	}
 
 	private void processControl(long time,int nbreq,ArrayList<VMData> vms) throws Exception {
-		this.logMessage("    /!\\ CONTROL : "+this.controllerURI+ " receiving average time :"+time+" with the last "+nbreq+" requests");
-		if(nbreq<10)
+		this.logMessage("    /!\\ CONTROL : "+this.controllerURI+ " receiving average time :"+time+" with the last "+nbreq+" requests with "+vms.size()+" VM : "+getNumberOfCoreAllocated(vms)+" cores");
+		if(nbreq<30 || (nbreq<20 && time>20000))
 			return;
 		double factor=0;
 		int number=0;
-		METHOD method=METHOD.NORMAL;
-		if(isHigher(time)){
+		int cores = getNumberOfCoreAllocated(vms);
+
+		switch(getMethod(time)){
+		case HIGHER :
 			factor = (time/StaticData.AVERAGE_TARGET);
-			method=METHOD.HIGHER;
-		}
-		if(isLower(time)){
+			number =Math.max(1, (int)(cores*factor));
+			number =Math.max(StaticData.MAX_ALLOCATION, number);
+			allocate(number);
+			processAllocation(factor,number,vms,time,nbreq,cores);
+			rdmop.resetRequestNumber();
+			break;
+		case LOWER :
 			factor = (StaticData.AVERAGE_TARGET/time);
-			method=METHOD.LOWER;
+			number =Math.max(1, (int)(cores-(cores/factor)));
+			number =Math.max(StaticData.MAX_DEALLOCATION, number);
+			deallocate(number);
+			if(vms.size()==1)
+				if(vms.get(0).getNbCore()==2)
+					break;
+			processDeallocate(factor,number,vms,time,nbreq,cores);
+			rdmop.resetRequestNumber();
+			break;
+		case NORMAL :
+			allocate(0);
+			deallocate(0);
+			break;
+		default:
+			allocate(0);
+			deallocate(0);
+			break;
 		}
-		if(method!=METHOD.NORMAL){
-			int cores = getNumberOfCoreAllocated(vms);
-			if(method==METHOD.LOWER){
-				number =Math.max(1, (int)(cores-(cores/factor)));
-				disallocate(number);
+	}
+
+
+	private void processAllocation(double factor, int number, ArrayList<VMData> vms, long time, int nbreq, int cores) throws Exception {
+		this.logMessage("\n\n--------"+this.controllerURI+"---[HIGHER]---------------------------\n"
+				+ "VM_FREE : "+vmFree.size()+"\n"
+				+ "VM_RESERVED : "+vmReserved.size()+"\n"
+				+ "VM ALLOCATED : "+vms.size()+"\n"
+				+ "AVERAGE TIME : "+time+" : last "+nbreq+" requests\n"
+				+ "ALLOCATE : "+waitingAllocation+"\n"
+				+ "DEALLOCATE : "+waitingDeallocation+"\n"
+				+ "FACTOR : "+factor+"\n"
+				+ "NUMBER : "+number+"\n"
+				+ "Total Actual Core Allocated : "+cores+"\n"
+				+"--------------------------------------------------------------------\n");
+		/*Sorting the VMS by the ascending order of the number of cores allocated*/
+		ArrayList<VMData> list=new ArrayList<VMData>(vms);
+		Collections.sort(list);
+		Collections.reverse(list);
+
+		synchronized(o){
+			while(waitingAllocation>0 && !list.isEmpty()){
+				int allocated=0;
+				VMData processing=list.remove(0);
+				allocated=rdmop.addCore(waitingAllocation, processing.getVMUri());
+				waitingAllocation=waitingAllocation-allocated;
+				this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED : "+allocated+" cores to VM : "+processing.getVMUri());
+			}
+			if(waitingAllocation==0){
+
 			}else{
-				number =Math.max(1, (int)(cores*factor));
-				allocate(number);
-				synchronized(o){
-					this.logMessage("\n\n--------"+this.controllerURI+"-----"+method+"-------------------------\n"
-							+ "VM_FREE : "+vmFree.size()+"\n"
-							+ "VM_RESERVED : "+vmReserved.size()+"\n"
-							+ "VM ALLOCATED : "+vms.size()+"\n"
-							+ "AVERAGE TIME : "+time+"\n"
-							+ "ALLOCATE : "+waitingAllocation+"\n"
-							+ "DISALLOCATE : "+waitingDisallocation+"\n"
-							+ "FACTOR : "+factor+"\n"
-							+ "NUMBER : "+number+"\n"
-							+ "Total Core Allocated : "+cores+"\n"
-							+"--------------------------------------------------------------------\n");
-
-					while(waitingAllocation>0){
-						if(!vmReserved.isEmpty()){
-							this.logMessage("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-							VMData v = vmReserved.remove(0);
-							rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
-							waitingAllocation=waitingAllocation-2;
-						}else if(!vmFree.isEmpty()){
-							this.logMessage("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-							VMData v = vmFree.remove(0);
-							rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
-							waitingAllocation=waitingAllocation-2;
-							waitingAllocation--;
-						}else{
-
-							break;
-						}
+				while(waitingAllocation>0){
+					if(!vmReserved.isEmpty()){
+						VMData v = vmReserved.remove(0);
+						rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
+						int allocated=rdmop.addCore(waitingAllocation, v.getVMUri());
+						waitingAllocation=waitingAllocation-v.getNbCore()-allocated;
+						this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED new VM : "+v.getVMUri()+ "allocated "+allocated+" cores");
+					}else if(!vmFree.isEmpty()){
+						VMData v = vmFree.remove(0);
+						rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
+						int allocated=rdmop.addCore(waitingAllocation, v.getVMUri());
+						waitingAllocation=waitingAllocation-v.getNbCore()-allocated;
+						this.logMessage("[CONTROL] : "+ this.controllerURI + " ALLOCATED new VM : "+v.getVMUri()+ "allocated "+allocated+" cores");
+					}else{
+						break;
 					}
 				}
 			}
-		}else{
-			allocate(0);
-			disallocate(0);
 		}
-
 	}
 
-	public void raiseFrequency(int nbCore,int id) throws Exception{
-		ApplicationVMManagementOutboundPort freqVMM=this.mapVMManagement.get(id);
-		VMExtendedManagementOutboundPort freqVMEM=this.mapVMEManagement.get(id);
-
-		VMData d=freqVMEM.getData();
-
-		ProcessorManagementOutboundPort pmop=new ProcessorManagementOutboundPort(this);
-		ProcessorIntrospectionOutboundPort piop=new ProcessorIntrospectionOutboundPort(this);
-
-		for(int i=0;i<nbCore;i++){
-			for(Entry<String, Map<ProcessorPortTypes, String>> e : d.getProc().entrySet()){
-				pmop.doConnection(e.getValue().get(ProcessorPortTypes.MANAGEMENT), ProcessorManagementI.class.getCanonicalName());
-				piop.doConnection(e.getValue().get(ProcessorPortTypes.INTROSPECTION), ProcessorManagementI.class.getCanonicalName());
 
 
-				//pmop.setCoreFrequency(coreNo, frequency);
+	private void processDeallocate(double factor, int number, ArrayList<VMData> vms, long time, int nbreq,int cores) throws Exception {
+		this.logMessage("\n\n--------"+this.controllerURI+"---[LOWER]---------------------------\n"
+				+ "VM_FREE : "+vmFree.size()+"\n"
+				+ "VM_RESERVED : "+vmReserved.size()+"\n"
+				+ "VM ALLOCATED : "+vms.size()+"\n"
+				+ "AVERAGE TIME : "+time+" : last "+nbreq+" requests\n"
+				+ "ALLOCATE : "+waitingAllocation+"\n"
+				+ "DEALLOCATE : "+waitingDeallocation+"\n"
+				+ "FACTOR : "+factor+"\n"
+				+ "NUMBER : "+number+"\n"
+				+ "Total Actual Core Allocated : "+cores+"\n"
+				+"--------------------------------------------------------------------\n");
+		ArrayList<VMData> list=new ArrayList<VMData>(vms);
+		Collections.sort(list);
+
+		synchronized(o){
+			while(waitingDeallocation>0 && !list.isEmpty()){
+				int deallocated=0;
+				VMData processing=list.remove(0);
+				int toDeallocate=Math.min(processing.getNbCore()-2,waitingDeallocation);
+				deallocated=rdmop.removeCore(toDeallocate, processing.getVMUri()).length;
+				waitingDeallocation=waitingDeallocation-deallocated;
+				this.logMessage("[CONTROL] : "+ this.controllerURI + " DEALLOCATED : "+deallocated+" of VM : "+processing.getVMUri());
+			}
+			if(waitingDeallocation==0){
+			}else{
+				list=new ArrayList<VMData>(vms);
+				while(list.size()>2 && waitingDeallocation>0){
+					VMData v = list.remove(0);
+					rdmop.unbindVM(v.getVMUri());
+					vmFree.add(v);
+					waitingDeallocation=waitingDeallocation-v.getNbCore();
+					this.logMessage("[CONTROL] : "+ this.controllerURI + " DEALLOCATED  VM : "+v.getVMUri());
+				}
 			}
 		}
 	}
 
-	public void lowerFrequency(int nbCore){
 
-	}
 
 
 	private void allocate(int i) {
@@ -250,8 +269,8 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	}
 
 
-	private void disallocate(int i) {
-		waitingDisallocation=i;
+	private void deallocate(int i) {
+		waitingDeallocation=i;
 	}
 
 
@@ -264,12 +283,20 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	}
 
 
+	public METHOD getMethod(long time){
+		if(isHigher(time))
+			return METHOD.HIGHER;
+		if(isLower(time))
+			return METHOD.LOWER;
+		return METHOD.LOWER;
+	}
+
 	public boolean isHigher(long time){
-		return (time > (StaticData.AVERAGE_TARGET*StaticData.PERCENT + StaticData.AVERAGE_TARGET));
+		return (time > (StaticData.AVERAGE_TARGET*StaticData.HIGHER_PERCENT + StaticData.AVERAGE_TARGET));
 	}
 
 	public boolean isLower(long time){
-		return (time < (StaticData.AVERAGE_TARGET*StaticData.PERCENT - StaticData.AVERAGE_TARGET));
+		return (time < (StaticData.AVERAGE_TARGET*StaticData.LOWER_PERCENT - StaticData.AVERAGE_TARGET));
 	}
 
 	public enum METHOD{

@@ -166,7 +166,7 @@ public class TestController extends AbstractCVM{
 		
 		String computerURI3 = "computer3" ;
 		int numberOfProcessors3 = 24 ;
-		int numberOfCores3 = 8 ;
+		int numberOfCores3 = 24;
 		Set<Integer> admissibleFrequencies3 = new HashSet<Integer>() ;
 		admissibleFrequencies.add(1500) ;	// Cores can run at 1,5 GHz
 		admissibleFrequencies.add(3000) ;	// and at 3 GHz
@@ -203,6 +203,8 @@ public class TestController extends AbstractCVM{
 		cmop.linkComputer(computerURI,ComputerServicesInboundPortURI,ComputerStaticStateDataInboundPortURI,ComputerDynamicStateDataInboundPortURI);
 		
 		cmop.linkComputer(computerURI2,ComputerServicesInboundPortURI2,ComputerStaticStateDataInboundPortURI2,ComputerDynamicStateDataInboundPortURI2);
+		
+		cmop.linkComputer(computerURI3, ComputerServicesInboundPortURI3, ComputerStaticStateDataInboundPortURI3, ComputerDynamicStateDataInboundPortURI3);
 
 		/*Application submit port */
 		this.arop = new ApplicationRequestOutboundPort(
@@ -237,8 +239,8 @@ public class TestController extends AbstractCVM{
 		RequestGenerator rg2 =
 				new RequestGenerator(
 						"rg2",			// generator component URI
-						600.0,			// mean time between two requests
-						2000000000L,	// mean number of instructions in requests
+						700.0,			// mean time between two requests
+						4000000000L,	// mean number of instructions in requests
 						RequestGeneratorManagementInboundPortURI2,
 						RequestSubmissionOutboundPortURI2,
 						RequestNotificationInboundPortURI2) ;
@@ -295,14 +297,13 @@ public class TestController extends AbstractCVM{
 			Thread.sleep(2000L) ;
 			rg_rsop.doConnection("a1", RequestSubmissionConnector.class.getCanonicalName());
 			rgmop.startGeneration();
-			Thread.sleep(5000L);
 		}
 		if(arop.acceptApplication(2, "rg2","a2",RequestNotificationInboundPortURI2)){
 			Thread.sleep(2000L) ;
 			rg_rsop2.doConnection("a2", RequestSubmissionConnector.class.getCanonicalName());
 			rgmop2.startGeneration();
 		}
-		Thread.sleep(90000L);
+		Thread.sleep(350000L);
 		rgmop.stopGeneration();
 		rgmop2.stopGeneration();
 		

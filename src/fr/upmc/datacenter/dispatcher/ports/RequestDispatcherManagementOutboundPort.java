@@ -5,6 +5,7 @@ import fr.upmc.components.ports.AbstractOutboundPort;
 import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
+import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 /**
@@ -63,5 +64,35 @@ implements	RequestDispatcherManagementI{
 	@Override
 	public void unbindVM(String vmUri) throws Exception {
 		((RequestDispatcherManagementI)this.connector).unbindVM(vmUri);
+	}
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#removeCore(int, java.lang.String)
+	 */
+	@Override
+	public AllocatedCore[] removeCore(int number,String vmURI) throws Exception{
+		return ((RequestDispatcherManagementI)this.connector).removeCore(number, vmURI);
+	}
+	
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#addCore(int, String)
+	 */
+	@Override
+	public int addCore(int number,String vmURI) throws Exception{
+		return ((RequestDispatcherManagementI)this.connector).addCore(number, vmURI);
+	}
+	
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#removeAll(java.lang.String)
+	 */
+	@Override
+	public AllocatedCore[] removeAll(String vmURI) throws Exception{
+		return ((RequestDispatcherManagementI)this.connector).removeAll(vmURI);
+	}
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#resetRequestNumber()
+	 */
+	@Override
+	public void resetRequestNumber() throws Exception {
+		((RequestDispatcherManagementI)this.connector).resetRequestNumber();
 	}
 }

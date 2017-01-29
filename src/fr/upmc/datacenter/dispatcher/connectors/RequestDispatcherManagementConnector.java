@@ -2,6 +2,7 @@ package fr.upmc.datacenter.dispatcher.connectors;
 
 import fr.upmc.components.connectors.AbstractConnector;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
+import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 /**
  * The class <code>RequestDispatcherManagementConnector</code>
  *
@@ -27,6 +28,35 @@ implements	RequestDispatcherManagementI{
 	@Override
 	public void unbindVM(String vmUri) throws Exception {
 		((RequestDispatcherManagementI)this.offering).unbindVM(vmUri);
+	}
+	/*
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#removeCore(int, java.lang.String)
+	 */
+	@Override
+	public AllocatedCore[] removeCore(int number,String vmURI) throws Exception{
+		return ((RequestDispatcherManagementI)this.offering).removeCore(number,vmURI);
+	}
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#addCore(int, java.lang.String)
+	 */
+	@Override
+	public int addCore(int number,String vmURI) throws Exception{
+		return ((RequestDispatcherManagementI)this.offering).addCore(number,vmURI);
+	}
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#removeAll(java.lang.String)
+	 */
+	@Override
+	public AllocatedCore[] removeAll(String vmURI) throws Exception{
+		return ((RequestDispatcherManagementI)this.offering).removeAll(vmURI);
+	}
+	
+	/**
+	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI#resetRequestNumber()
+	 */
+	@Override
+	public void resetRequestNumber() throws Exception{
+		((RequestDispatcherManagementI)this.offering).resetRequestNumber();
 	}
 	
 }

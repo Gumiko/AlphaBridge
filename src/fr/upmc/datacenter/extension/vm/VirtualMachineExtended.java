@@ -44,14 +44,8 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 	}
 
 	public VMData getData() throws Exception{
-		int c= this.allocatedCoresIdleStatus.size();
-		//Map<String, ProcessorServicesOutboundPort> x=this.processorServicesPorts;
-
 		Map<String,Map<ProcessorPortTypes,String>> proc=new HashMap<String,Map<ProcessorPortTypes,String>>();
-		//		for(Entry<String,ProcessorServicesOutboundPort> e: x.entrySet()){
-		//			proc.put(e.getKey(), e.getValue().getClientPortURI());
-		//			
-		//		}
+	
 		int nbCore=0;
 		for(AllocatedCore ac: this.allocatedCoresIdleStatus.keySet()){
 			nbCore++;
@@ -78,7 +72,6 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 			this.allocatedCoresIdleStatus.remove(removelist.get(i));
 			rm[i]=removelist.get(i);
 		}
-
 		return rm;
 
 	}

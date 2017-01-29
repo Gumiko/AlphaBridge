@@ -32,7 +32,7 @@ import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
 import fr.upmc.datacenterclient.requestgenerator.connectors.RequestGeneratorManagementConnector;
 import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagementOutboundPort;
 
-public class TestGlobalRing extends AbstractCVM{
+public class TestBigGlobalRing extends AbstractCVM{
 	public static final String	RequestSubmissionInboundPortURI = "rsibp" ;
 	public static final String	RequestSubmissionOutboundPortURI = "rsobp" ;
 
@@ -58,8 +58,8 @@ public class TestGlobalRing extends AbstractCVM{
 	int lastComputer=1;
 	int lastRG=0;
 
-	int nbGenerator=8;
-	int nbComputer=15;
+	int nbGenerator=30;
+	int nbComputer=50;
 
 	/** Port connected to the computer component to access its services.	*/
 	protected ComputerServicesOutboundPort				csPort ;
@@ -87,7 +87,7 @@ public class TestGlobalRing extends AbstractCVM{
 	protected AdmissionControllerManagementOutboundPort cmop;
 
 
-	public TestGlobalRing() throws Exception {
+	public TestBigGlobalRing() throws Exception {
 		super();
 	}
 
@@ -203,7 +203,7 @@ public class TestGlobalRing extends AbstractCVM{
 		// Uncomment next line to execute components in debug mode.
 		// AbstractCVM.toggleDebugMode() ;
 		try {
-			final TestGlobalRing tc = new TestGlobalRing() ;
+			final TestBigGlobalRing tc = new TestBigGlobalRing() ;
 			// Deploy the components
 			tc.deploy() ;
 			System.out.println("starting.......") ;

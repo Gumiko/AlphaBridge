@@ -13,6 +13,7 @@ import fr.upmc.components.AbstractComponent;
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.connectors.DataConnector;
 import fr.upmc.components.interfaces.DataRequiredI;
+import fr.upmc.data.StaticData;
 import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
 import fr.upmc.datacenter.admissioncontroller.factory.VMFactory;
 import fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI;
@@ -94,7 +95,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 	private final int PARAMETER_INITIAL_NB_CORE=2;
 	private final int PARAMETER_INITIAL_NB_VM=2;
-	private final int MAX_VM_RESERVED=4;
+	private final int MAX_VM_RESERVED=8;
 
 	private int VM_ID=1;
 	private int APP_ID=1;
@@ -203,7 +204,7 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 			rd.bindVM(temp.getVMUri(), temp.getVMRequestSubmission(),temp.getVMManagement(),temp.getVMEManagement());
 
 			Controller co= new Controller(CONTROLLER_PREFIX+CO_ID,RD_DSDIP_PREFIX+RD_ID,RD_MIP_PREFIX+RD_ID,RD_AIP_PREFIX+RD_ID,CO_ID,CONTROLLER_MANAGEMENT_PREFIX+CO_ID);
-			rd.startUnlimitedPushing(5000);
+			rd.startUnlimitedPushing(StaticData.DISPATCHER_PUSH_INTERVAL);
 
 			synchronized(o){
 				if(!Free.isEmpty()){
@@ -250,8 +251,8 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 
 			}
 
-			co.startUnlimitedPushing(4000);
-			this.startUnlimitedPushing(4000);
+			co.startUnlimitedPushing(StaticData.RING_PUSH_INTERVAL);
+			this.startUnlimitedPushing(StaticData.RING_PUSH_INTERVAL);
 			RD_ID++;
 			APP_ID++;
 			CO_ID++;
@@ -301,9 +302,10 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		int nbProc = staticState.getNumberOfProcessors();
 		this.logMessage("Computer : "+nbCores+" Cores & "+nbProc+" Processor");
 		this.logMessage("Creating "+(((nbCores*nbProc)/2)/PARAMETER_INITIAL_NB_CORE)+" VM with "+PARAMETER_INITIAL_NB_CORE+" cores");
-		for(int i=0;i<(nbCores*nbProc)/2;i++){
+		for(int i=0;i<(((nbCores*nbProc)/2)/PARAMETER_INITIAL_NB_CORE);i++){
 			AllocatedCore[] acs=csPort.allocateCores(PARAMETER_INITIAL_NB_CORE);
 			if(acs.length!=0){
+				
 				VirtualMachineExtended vme=new VirtualMachineExtended(computerURI,computerServicesInboundPortURI,VM_URI_PREFIX+(VM_ID),VM_AVMMIP_PREFIX+VM_ID,VM_VMEMIP_PREFIX+VM_ID,VM_RSIP_PREFIX+VM_ID,VM_RNOP_PREFIX+VM_ID);
 				VM_ID++;
 				vme.allocateCores(acs);

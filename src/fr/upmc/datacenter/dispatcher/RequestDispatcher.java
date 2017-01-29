@@ -1,11 +1,8 @@
 package fr.upmc.datacenter.dispatcher;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -14,12 +11,12 @@ import fr.upmc.components.ComponentI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
-import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherActuatorInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementInboundPort;
 import fr.upmc.datacenter.extension.vm.VMData;
 import fr.upmc.datacenter.extension.vm.connectors.VMExtendedManagementConnector;
 import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
+import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.software.applicationvm.connectors.ApplicationVMManagementConnector;
 import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
@@ -69,7 +66,6 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	//				requestDispatcherStaticStateDataInboundPort ;
 	/** RequestDispatcher data inbound port through which it pushes its dynamic data.	*/
 	protected RequestDispatcherDynamicStateDataInboundPort rddsdip ;
-	protected RequestDispatcherActuatorInboundPort rdaip;
 	/** future of the task scheduled to push dynamic data.					*/
 	protected ScheduledFuture<?>			pushingFuture ;
 
@@ -140,10 +136,6 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		this.addPort(rddsdip) ;
 		this.rddsdip.publishPort();
 
-		/*Actuator*/
-		this.rdaip=new RequestDispatcherActuatorInboundPort(requestDispatcherActuatorInboundPort,this);
-		this.addPort(rdaip);
-		this.rdaip.publishPort();
 		/*
 		 *Management port used by the controller 
 		 */
@@ -198,12 +190,6 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		vms=new ArrayList<>(rsop.values());
 
 		this.logMessage("VM"+id+" : Linked !");
-
-		synchronized(o){
-			totalTime=0;
-			numberOfRequests=0;
-			lastTime.clear();
-		}
 	}
 
 
@@ -220,6 +206,27 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 		vms=new ArrayList<>(rsop.values());
 	}
 
+	public AllocatedCore[] removeCore(int number,String vmURI){
+		VMExtendedManagementOutboundPort port = vmemops.get(vmURI);
+		if(port!=null)
+			return port.removeCore(number);
+		return null;
+	}
+	
+	public int addCore(int number,String vmURI) throws Exception{
+		VMExtendedManagementOutboundPort port = vmemops.get(vmURI);
+		if(port!=null)
+			return port.addCore(number);
+		return 0;
+	}
+	
+	public AllocatedCore[] removeAll(String vmURI){
+		VMExtendedManagementOutboundPort port = vmemops.get(vmURI);
+		if(port!=null)
+			return port.removeAll();
+		return null;
+		
+	}
 
 
 	@Override
@@ -354,5 +361,13 @@ implements RequestDispatcherI,RequestDispatcherManagementI,RequestSubmissionHand
 	public long getAverageTime(){
 		return totalTime/numberOfRequests;
 	}
-
+	
+	@Override
+	public void resetRequestNumber(){
+		synchronized(o){
+			totalTime=0;
+			numberOfRequests=0;
+			lastTime.clear();
+		}
+	}
 }
