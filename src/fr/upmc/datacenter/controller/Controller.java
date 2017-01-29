@@ -28,6 +28,7 @@ import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInbo
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementOutboundPort;
 import fr.upmc.datacenter.extension.vm.VMData;
+import fr.upmc.datacenter.extension.vm.connectors.VMExtendedManagementConnector;
 import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
@@ -40,6 +41,7 @@ import fr.upmc.datacenter.ring.interfaces.RingDataI;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataInboundPort;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataOutboundPort;
+import fr.upmc.datacenter.software.applicationvm.connectors.ApplicationVMManagementConnector;
 import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
 
 public class Controller extends AbstractComponent
@@ -153,12 +155,15 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		assert	currentDynamicState != null ;
 
 		long time = currentDynamicState.getAverageTime();
-		processControl(time);
+		processControl(time,currentDynamicState.getNbreq(),currentDynamicState.getVMDatas());
 	}
 
-	private void processControl(long time) {
-		this.logMessage("    /!\\ CONTROL : "+this.controllerURI+ " receiving average time :"+time);
+	private void processControl(long time,int nbreq,ArrayList<VMData> vms) throws Exception {
+		this.logMessage("    /!\\ CONTROL : "+this.controllerURI+ " receiving average time :"+time+" with the last "+nbreq+" requests");
+		if(nbreq<10)
+			return;
 		double factor=0;
+		int number=0;
 		METHOD method=METHOD.NORMAL;
 		if(isHigher(time)){
 			factor = (time/StaticData.AVERAGE_TARGET);
@@ -169,17 +174,53 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 			method=METHOD.LOWER;
 		}
 		if(method!=METHOD.NORMAL){
-			int cores = getNumberOfCoreAllocated();
+			int cores = getNumberOfCoreAllocated(vms);
 			if(method==METHOD.LOWER){
-				disallocate(Math.max(1, (int)(cores-(cores/factor))));
+				number =Math.max(1, (int)(cores-(cores/factor)));
+				disallocate(number);
 			}else{
-				allocate(Math.max(1, (int)(cores*factor)));
+				number =Math.max(1, (int)(cores*factor));
+				allocate(number);
+				synchronized(o){
+					this.logMessage("\n\n--------"+this.controllerURI+"-----"+method+"-------------------------\n"
+							+ "VM_FREE : "+vmFree.size()+"\n"
+							+ "VM_RESERVED : "+vmReserved.size()+"\n"
+							+ "VM ALLOCATED : "+vms.size()+"\n"
+							+ "AVERAGE TIME : "+time+"\n"
+							+ "ALLOCATE : "+waitingAllocation+"\n"
+							+ "DISALLOCATE : "+waitingDisallocation+"\n"
+							+ "FACTOR : "+factor+"\n"
+							+ "NUMBER : "+number+"\n"
+							+ "Total Core Allocated : "+cores+"\n"
+							+"--------------------------------------------------------------------\n");
+
+					while(waitingAllocation>0){
+						if(!vmReserved.isEmpty()){
+							this.logMessage("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+							VMData v = vmReserved.remove(0);
+							rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
+							waitingAllocation=waitingAllocation-2;
+						}else if(!vmFree.isEmpty()){
+							this.logMessage("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+							VMData v = vmFree.remove(0);
+							rdmop.bindVM(v.getVMUri(), v.getVMRequestSubmission(),v.getVMManagement(),v.getVMEManagement());
+							waitingAllocation=waitingAllocation-2;
+							waitingAllocation--;
+						}else{
+
+							break;
+						}
+					}
+				}
 			}
+		}else{
+			allocate(0);
+			disallocate(0);
 		}
+
 	}
 
 	public void raiseFrequency(int nbCore,int id) throws Exception{
-
 		ApplicationVMManagementOutboundPort freqVMM=this.mapVMManagement.get(id);
 		VMExtendedManagementOutboundPort freqVMEM=this.mapVMEManagement.get(id);
 
@@ -206,19 +247,20 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 
 	private void allocate(int i) {
 		waitingAllocation=i;
-
 	}
 
 
 	private void disallocate(int i) {
 		waitingDisallocation=i;
-
 	}
 
 
-	private int getNumberOfCoreAllocated() {
-		// TODO Auto-generated method stub
-		return 0;
+	private int getNumberOfCoreAllocated(ArrayList<VMData> vms) throws Exception {
+		int total=0;
+		for(VMData vm : vms){
+			total+=vm.getNbCore();
+		}
+		return total;
 	}
 
 
@@ -238,20 +280,14 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	public void acceptRingDynamicData(String requestDispatcherURI, RingDynamicStateI currentDynamicState)
 			throws Exception {
 		synchronized(o){
-			this.logMessage("[----DATA----]"+this.controllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
-			
-			vmFree.addAll(currentDynamicState.getVMDataList());
-			this.logMessage("[----DATA----]"+this.controllerURI+ " FREE["+vmFree.size()+"] | RESERVED["+vmReserved.size()+"]");
-			if(waitingAllocation>0){
+			//this.logMessage("[----DATA----]"+this.controllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
 
+			vmFree.addAll(currentDynamicState.getVMDataList());
+			//this.logMessage("[----DATA----]"+this.controllerURI+ " FREE["+vmFree.size()+"] | RESERVED["+vmReserved.size()+"]");
+			while(waitingAllocation>0 && !vmFree.isEmpty()){
+				vmReserved.add(vmFree.remove(0));
+				waitingAllocation--;
 			}
-			/*TODO*/
-			/*
-			 * 
-			 * 
-			 * currentDynamicState.getVMDatas();
-			 * 
-			 */
 		}
 	}
 
