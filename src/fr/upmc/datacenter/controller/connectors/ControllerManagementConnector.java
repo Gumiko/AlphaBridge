@@ -16,9 +16,6 @@ import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
  * invariant	true
  * </pre>
  * @author	Cédric Ribeiro et Mokrane Kadri
- */
-/**
- * @author Mokrane
  *
  */
 public class ControllerManagementConnector extends		AbstractConnector
@@ -26,7 +23,7 @@ implements	ControllerManagementI{
 
 	
 	
-	/*
+	/**
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#stopSending()
 	 */
 	@Override
@@ -35,7 +32,7 @@ implements	ControllerManagementI{
 
 	}
 
-	/* 
+	/**
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#startSending()
 	 */
 	@Override
@@ -44,7 +41,7 @@ implements	ControllerManagementI{
 
 	}
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#getNextControllerUri()
 	 */
 	@Override
@@ -52,7 +49,7 @@ implements	ControllerManagementI{
 		return ((ControllerManagementI)this.offering).getNextControllerUri();
 	}
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#getPreviousControllerUri()
 	 */
 	@Override
@@ -61,7 +58,7 @@ implements	ControllerManagementI{
 	}
 	
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#setNextControllerUri(String)
 	 */
 	@Override
@@ -71,7 +68,7 @@ implements	ControllerManagementI{
 
 	
 	
-	/* 
+	/**
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#setPreviousControllerUri(String)
 	 */
 	@Override
@@ -79,7 +76,7 @@ implements	ControllerManagementI{
 		 ((ControllerManagementI)this.offering).setPreviousControllerUri(controllerManagementUri);
 	}
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#bindSendingDataUri(String)
 	 */
 	@Override
@@ -87,7 +84,7 @@ implements	ControllerManagementI{
 		((ControllerManagementI)this.offering).bindSendingDataUri(DataInboundPortUri);
 	}
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#getControllerRingDataInboundPortUri()
 	 */
 	@Override

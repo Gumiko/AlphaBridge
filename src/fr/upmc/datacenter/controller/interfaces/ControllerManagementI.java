@@ -2,7 +2,6 @@ package fr.upmc.datacenter.controller.interfaces;
 
 import fr.upmc.components.interfaces.OfferedI;
 import fr.upmc.components.interfaces.RequiredI;
-import fr.upmc.datacenter.ring.ports.RingDynamicStateDataInboundPort;
 /**
  * The interface <code>ControllerManagementI</code> defines the methods
  * to manage the Controller.

@@ -2,7 +2,6 @@ package fr.upmc.datacenter.admissioncontroller.connectors;
 
 import fr.upmc.components.connectors.AbstractConnector;
 import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI;
-import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
  * The class <code>ControllerManagementConnector</code>implements a
  * connector for ports exchanging through the interface
@@ -10,11 +9,6 @@ import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
  *
  * <p><strong>Description</strong></p>
  * 
- * <p><strong>Invariant</strong></p>
- * 
- * <pre>
- * invariant	true
- * </pre>
  * 
  * @author	Cédric Ribeiro et Mokrane Kadri
  */

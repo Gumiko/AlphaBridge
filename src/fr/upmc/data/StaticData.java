@@ -18,10 +18,10 @@ package fr.upmc.data;
  */
 public class StaticData {
 	/*Targeting the request per second for a request dispatcher in ms*/
-	public static long AVERAGE_TARGET=4000;
+	public static long AVERAGE_TARGET=2500;
 	/*Percent that is acceptable, near the Average Target */
-	public static double LOWER_PERCENT=0.6;
-	public static double HIGHER_PERCENT=0.4;
+	public static double LOWER_PERCENT=0.5;
+	public static double HIGHER_PERCENT=0.3;
 	/* data push interval in the ring systeme */
 	public static int RING_PUSH_INTERVAL=2000;
 	/* data push interval to the controller */

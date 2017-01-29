@@ -18,7 +18,7 @@ public class ControllerManagementInboundPort extends AbstractInboundPort impleme
 	/***
 	 * 
 	 * @param owner     owner component
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public		ControllerManagementInboundPort(
 			ComponentI owner
@@ -32,7 +32,7 @@ public class ControllerManagementInboundPort extends AbstractInboundPort impleme
 	/***
 	 * @param uri       uri of the component
 	 * @param owner     owner component
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public				ControllerManagementInboundPort(
 			String uri,

@@ -1,7 +1,6 @@
 fr.upmc.data
 fr.upmc.datacenter.admissioncontroller
 fr.upmc.datacenter.admissioncontroller.connectors
-fr.upmc.datacenter.admissioncontroller.factory
 fr.upmc.datacenter.admissioncontroller.interfaces
 fr.upmc.datacenter.admissioncontroller.ports
 fr.upmc.datacenter.controller
@@ -24,5 +23,3 @@ fr.upmc.datacenter.ring
 fr.upmc.datacenter.ring.interfaces
 fr.upmc.datacenter.ring.ports
 fr.upmc.tests
-fr.upmc.tests.DCVM
-fr.upmc.tests.multijvm

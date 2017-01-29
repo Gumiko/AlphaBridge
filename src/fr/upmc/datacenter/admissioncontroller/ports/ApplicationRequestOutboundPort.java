@@ -2,10 +2,7 @@ package fr.upmc.datacenter.admissioncontroller.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
-import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI;
-import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
-import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
 /**
  * The class <code>ApplicationRequestOutboundPort</code>implements the
  * outbound port requiring the interface <code>ApplicationRequestI</code>.
@@ -27,7 +24,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	/***
 	 * 
 	 * @param owner     owner component
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public		ApplicationRequestOutboundPort(
 			ComponentI owner
@@ -42,7 +39,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	 * 
 	 * @param uri        uri of the component
 	 * @param owner      owner component
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public				ApplicationRequestOutboundPort(
 			String uri,
@@ -55,7 +52,7 @@ public class ApplicationRequestOutboundPort extends AbstractOutboundPort impleme
 	}
 
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI#acceptApplication(Integer, String, String,String)
 	 */
 	@Override

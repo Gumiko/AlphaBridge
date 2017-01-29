@@ -4,7 +4,14 @@ import fr.upmc.components.ComponentI;
 import fr.upmc.components.interfaces.DataOfferedI;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.ports.AbstractControlledDataInboundPort;
-
+/**
+* The class <code>RingDynamicStateDataInboundPort</code> implements the
+ * inbound port through which the component management methods are called.
+* 
+* <p>Created on : 2016-2017</p>
+* 
+* @author	Cédric Ribeiro et Mokrane Kadri
+*/
 public class RingDynamicStateDataInboundPort extends AbstractControlledDataInboundPort{
 
 	/**

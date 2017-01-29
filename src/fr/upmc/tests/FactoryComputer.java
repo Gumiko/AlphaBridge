@@ -30,7 +30,7 @@ public class FactoryComputer {
 	 * @param ComputerStaticStateDataInboundPortURI   URI of the computer's static state data inbound port.
 	 * @param ComputerDynamicStateDataInboundPortURI  URI of the computer's dynamic state data inbound port.
 	 * @return                                        the newly created computer
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public static Computer createComputer(String computerURI,int numberOfProcessors,int numberOfCores,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,String ComputerDynamicStateDataInboundPortURI) throws Exception{
 		Set<Integer> admissibleFrequencies = new HashSet<Integer>() ;

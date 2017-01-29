@@ -19,7 +19,6 @@ import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
  * invariant	true
  * </pre>
  *  @author	Cédric Ribeiro et Mokrane Kadri
- * @version	$Name$ -- $Revision$ -- $Date$
  */
 
 public class ComputerExtendedManagementInboundPort extends	AbstractInboundPort
@@ -30,7 +29,7 @@ implements	ComputerExtendedManagementI{
 	/***
 	 * 
 	 * @param owner          owner component.
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public		ComputerExtendedManagementInboundPort(
 			ComponentI owner
@@ -43,7 +42,7 @@ implements	ComputerExtendedManagementI{
 	/***
 	 * @param uri			uri of the port.
 	 * @param owner			owner component.
-	 * @throws Exception
+	 * @throws Exception e
 
 	 */
 	public				ComputerExtendedManagementInboundPort(
@@ -56,7 +55,7 @@ implements	ComputerExtendedManagementI{
 		assert	owner != null && owner instanceof ComputerExtended ;
 	}
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI#releaseCore(fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore)
 	 */
 	@Override
@@ -67,7 +66,7 @@ implements	ComputerExtendedManagementI{
 	}
 
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI#reserveCore(int)
 	 */
 	@Override
@@ -77,7 +76,7 @@ implements	ComputerExtendedManagementI{
 	}
 
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI#reserveCore(int, int)
 	 */
 	@Override

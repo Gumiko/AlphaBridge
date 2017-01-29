@@ -18,15 +18,15 @@ public interface ComputerExtendedManagementI extends RequiredI,OfferedI{
 	/***
 	 * Releases allocated cores
 	 * @param ac         Allocated cores to release
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public void releaseCore(AllocatedCore ac) throws Exception;
 	
 	/***
 	 * Reserves the requested number of cores
 	 * @param number  number of cores
-	 * @return
-	 * @throws Exception
+	 * @return The Allocated core reserved
+	 * @throws Exception e
 	 */
 	public AllocatedCore[] reserveCore(int number) throws Exception;
 	

@@ -2,8 +2,6 @@ package fr.upmc.datacenter.extension.computer.ports;
 
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractOutboundPort;
-import fr.upmc.datacenter.controller.Controller;
-import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
 import fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 
@@ -20,11 +18,6 @@ public class ComputerExtendedManagementOutboundPort extends		AbstractOutboundPor
 implements	ComputerExtendedManagementI{
 
 
-	/***
-	 * 
-	 * @param owner     owner component
-	 * @throws Exception
-	 */
 	public		ComputerExtendedManagementOutboundPort(
 			ComponentI owner
 			) throws Exception
@@ -34,12 +27,7 @@ implements	ComputerExtendedManagementI{
 		assert	owner != null;
 	}
 
-	/***
-	 * 
-	 * @param uri          uri of the component
-	 * @param owner
-	 * @throws Exception   owner component
-	 */
+
 	public				ComputerExtendedManagementOutboundPort(
 			String uri,
 			ComponentI owner
@@ -50,7 +38,7 @@ implements	ComputerExtendedManagementI{
 		assert	owner != null ;
 	}
 
-	/*
+	/**
 	 * @see fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI#releaseCore(fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore)
 	 */
 	@Override
@@ -59,7 +47,7 @@ implements	ComputerExtendedManagementI{
 		
 	}
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI#reserveCore(int)
 	 */
 	@Override
@@ -67,7 +55,7 @@ implements	ComputerExtendedManagementI{
 		return ((ComputerExtendedManagementI)this.connector).reserveCore(number);
 	}
 
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.extension.computer.interfaces.ComputerExtendedManagementI#reserveCore(int, int)
 	 */
 	@Override

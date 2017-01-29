@@ -40,10 +40,10 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 	
 	/***
 	 * 
-	 * @param averageTime
-	 * @param nbreq
-	 * @param VMDatas
-	 * @throws UnknownHostException
+	 * @param averageTime Average Time Termination of a request
+	 * @param nbreq Number of request
+	 * @param VMDatas List of the VM data
+	 * @throws UnknownHostException e
 	 */
 	
 	public RequestDispatcherDynamicState(long averageTime,int nbreq,ArrayList<VMData> VMDatas) throws UnknownHostException{
@@ -56,7 +56,7 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 	}
 	
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.interfaces.TimeStampingI#getTimeStamp()
 	 */
 	@Override
@@ -65,7 +65,7 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 	}
 
 	
-	/*
+	/**
 	 * @see fr.upmc.datacenter.interfaces.TimeStampingI#getTimeStamperId()
 	 */
 	@Override
@@ -74,7 +74,7 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 	}
 	
 	
-	/*
+	/**
 	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI#getAverageTime()
 	 */
 	@Override
@@ -82,7 +82,7 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 		return averageTime;
 	}
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI#getVMDatas()
 	 */
 	@Override
@@ -90,7 +90,7 @@ public class RequestDispatcherDynamicState implements RequestDispatcherDynamicSt
 		return VMDatas;
 	}
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI#getNbreq()
 	 */
 	@Override

@@ -5,19 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import fr.upmc.components.AbstractComponent;
 import fr.upmc.components.ComponentI;
 import fr.upmc.components.connectors.DataConnector;
-import fr.upmc.components.interfaces.DataRequiredI;
 import fr.upmc.data.StaticData;
-import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
-import fr.upmc.datacenter.admissioncontroller.factory.VMFactory;
 import fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI;
-import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerI;
 import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestInboundPort;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
@@ -26,46 +21,42 @@ import fr.upmc.datacenter.controller.Controller;
 import fr.upmc.datacenter.controller.connectors.ControllerManagementConnector;
 import fr.upmc.datacenter.controller.ports.ControllerManagementOutboundPort;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
-import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherManagementI;
-import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.extension.vm.VMData;
 import fr.upmc.datacenter.extension.vm.VirtualMachineExtended;
-import fr.upmc.datacenter.hardware.computers.Computer;
 import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
 import fr.upmc.datacenter.hardware.computers.interfaces.ComputerDynamicStateI;
-import fr.upmc.datacenter.hardware.computers.interfaces.ComputerServicesI;
 import fr.upmc.datacenter.hardware.computers.interfaces.ComputerStateDataConsumerI;
 import fr.upmc.datacenter.hardware.computers.interfaces.ComputerStaticStateI;
-import fr.upmc.datacenter.hardware.computers.ports.ComputerDynamicStateDataInboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerStaticStateDataOutboundPort;
-import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
-import fr.upmc.datacenter.hardware.tests.ComputerMonitor;
-import fr.upmc.datacenter.interfaces.ControlledDataRequiredI;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.ring.RingDynamicState;
 import fr.upmc.datacenter.ring.interfaces.RingDataI;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataInboundPort;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataOutboundPort;
-import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
-import fr.upmc.datacenter.software.applicationvm.ApplicationVM.ApplicationVMPortTypes;
-import fr.upmc.datacenter.software.applicationvm.connectors.ApplicationVMIntrospectionConnector;
-import fr.upmc.datacenter.software.applicationvm.connectors.ApplicationVMManagementConnector;
-import fr.upmc.datacenter.software.applicationvm.interfaces.ApplicationVMManagementI;
-import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMIntrospectionOutboundPort;
-import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
-import fr.upmc.datacenter.software.connectors.RequestNotificationConnector;
-import fr.upmc.datacenter.software.connectors.RequestSubmissionConnector;
-import fr.upmc.datacenter.software.interfaces.RequestSubmissionI;
-import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
-import fr.upmc.datacenter.software.ports.RequestNotificationOutboundPort;
-import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
-import fr.upmc.datacenterclient.requestgenerator.RequestGenerator;
-import fr.upmc.datacenterclient.requestgenerator.interfaces.RequestGeneratorManagementI;
-import fr.upmc.datacenterclient.requestgenerator.ports.RequestGeneratorManagementInboundPort;
+
+/**
+ * The class <code>AdmissionController</code> implements a component that represents an
+ * Admission Controller in a datacenter, receiving new application.
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ * The Admission Controller Purpose is to manage the new applications and computers sent to the datacenter.
+ * 
+ * When receiving a computer, he split the cores in multiples Virtual Machines then send it to the Ring Data.
+ * 
+ * The Admission Controller receive new Request Generator through the <code>ApplicationRequestI</code> Interface.
+ * When receiving a new request generator, it check if he has enough Virtual Machine at disposition and create
+ * a Request Dispatcher linked to the request generator and a Controller linked to the request Dispatcher.
+ * He then bind the Virtual Machine to the request Dispatcher.
+ * He add the Controller to the Data Ring where Free Virtual Machine that can be used by the controller circulate.
+ * 
+ * 
+ * @author	Cédric Ribeiro et Mokrane Kadri
+ */
 
 public class AdmissionController extends AbstractComponent
 implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataConsumerI,RingDataI,PushModeControllerI
@@ -106,8 +97,11 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 	Object o=new Object();
 
 	/*Admission Controller*/
+	/** Admission Controller URI*/
 	String admissionControllerURI;
+	/** Admission Controller Management InboundPort */
 	AdmissionControllerManagementInboundPort admissionControllerManagementInboundPort;
+	/** The ApplicationRequestInboundPort of the Admission Controller */
 	ApplicationRequestInboundPort applicationRequestInboundPort;
 
 	/*Controllers*/
@@ -115,30 +109,43 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 	String previousControllerManagementUri=null;
 
 	/*Request Dispatcher*/
+	/** Map of applicationURI received by the Admissions Controller*/
 	Map<Integer,String> applicationURI;
+	/** Map of requestDispatcherURI created by the Admissions Controller*/
 	Map<Integer,String> requestDispatcherURI;
+	/** Map of requestDispatcherManagementURIs created by the Admissions Controller*/
 	Map<Integer,String> requestDispatcherManagementURIs;
 
 	/*Computers*/
+	/** Map of computerUris sent to the Admissions Controller*/
 	Map<Integer,String> computerURIs;
+	/** Map of computerServicesPorts sent to the Admissions Controller*/
 	Map<Integer,ComputerServicesOutboundPort> computerServicesPorts;
+	/** Map of computerDynamicData sent to the Admissions Controller*/
 	Map<Integer, ComputerDynamicStateDataOutboundPort> computerDynamicData;
+	/** Map of computerStaticData sent to the Admissions Controller*/
 	Map<Integer, ComputerStaticStateDataOutboundPort> computerStaticData;
 
 	/*VM*/
+	/** Virtual Machine Reserved by the Admission Controller */
 	List<VMData> Reserved;
+	/** Virtual Machine that can circulate to the Ring Data */
 	List<VMData> Free;
-
-	/* VM ??*/
-	Map<Integer, ApplicationVMManagementOutboundPort> vmManagementOutBountPorts;
-	Map<ApplicationVMManagementOutboundPort,String> vmManagementOBPwithVMUris=new HashMap<ApplicationVMManagementOutboundPort,String>();
 
 	/** future of the task scheduled to push dynamic data.					*/
 	protected ScheduledFuture<?>			pushingFuture ;
-
+	/** RingDynamicStateDataOutboundPort of the admission controller */
 	RingDynamicStateDataOutboundPort rdsdop;
+	/**RingDynamicStateDataInboundPort of the admission controller */
 	RingDynamicStateDataInboundPort rdsdip;
-
+	/**
+	 * Create an Admission Controller
+	 * 
+	 * @param admissionControllerURI URI of the admission controller
+	 * @param applicationRequestInboundURI applicationRequestInboundURI of the admission controller
+	 * @param admissionControllerManagementInboundURI admissionControllerManagementInboundURI of the admission controller
+	 * @throws Exception e
+	 */
 	public AdmissionController(String admissionControllerURI,String applicationRequestInboundURI,String admissionControllerManagementInboundURI) throws Exception{
 
 		super(1,1);
@@ -158,7 +165,6 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		/*Initialized VMs Data List */
 		Reserved = new ArrayList<VMData>();
 		Free= new ArrayList<VMData>();
-		vmManagementOutBountPorts=new HashMap<Integer, ApplicationVMManagementOutboundPort>();
 
 		/* Init all ports */
 
@@ -185,7 +191,9 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 	}
 
 
-
+	/**
+	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.ApplicationRequestI#acceptApplication(java.lang.Integer, java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
 	public boolean acceptApplication(Integer application, String requestGeneratorURI, String requestDispatcherRequestSubmissionInboundPortURI,String requestGeneratorRequestNotificationInboundPort) throws Exception {
 		if(Reserved.size()>=3){
@@ -263,6 +271,9 @@ implements ApplicationRequestI,AdmissionControllerManagementI,ComputerStateDataC
 		return false;
 	}
 
+	/**
+	 * @see fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI#linkComputer(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public void linkComputer(String computerURI,String computerServicesInboundPortURI,String computerStaticStateDataInboundPortURI,
 			String computerDynamicStateDataInboundPortURI) throws Exception {
 		this.logMessage(" --/!\\-- Linking Computer "+computerURI+" to :"+this.admissionControllerURI);

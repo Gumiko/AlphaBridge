@@ -17,7 +17,7 @@ implements	ControllerManagementI{
     /***
      * 
      * @param owner       owner component
-     * @throws Exception
+     * @throws Exception e
      */
 	public		ControllerManagementOutboundPort(
 			ComponentI owner
@@ -32,7 +32,7 @@ implements	ControllerManagementI{
 	 *  
 	 * @param uri             uri of the component
 	 * @param owner           owner component
-	 * @throws Exception
+	 * @throws Exception e
 	 */
 	public				ControllerManagementOutboundPort(
 			String uri,

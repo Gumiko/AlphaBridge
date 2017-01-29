@@ -4,9 +4,9 @@ import fr.upmc.components.ComponentI;
 import fr.upmc.components.ports.AbstractInboundPort;
 import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.admissioncontroller.interfaces.AdmissionControllerManagementI;
-import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
- * The class <code>ControllerManagementInboundPort</code>
+* The class <code>AdmissionControllerManagementInboundPort</code>implements the
+ * inbound port requiring the interface <code>AdmissionControllerManagementI</code>
  *
  * <p><strong>Description</strong></p>
  * 

@@ -1,5 +1,9 @@
 package fr.upmc.datacenter.ring.interfaces;
 
+/**
+ * @author	Cédric Ribeiro et Mokrane Kadri
+ */
+
 import java.util.List;
 
 import fr.upmc.components.interfaces.DataOfferedI;

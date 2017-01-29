@@ -26,10 +26,10 @@ public class VMData implements Comparator<VMData>,Comparable<VMData>{
 	 * @param nbCore          number of cores
 	 * @param VMUri           uri of the VM
 	 * @param proc            processors list
-	 * @param VMM             
-	 * @param VMEM
-	 * @param RequestSubmission  
-	 * @throws Exception
+	 * @param VMM        	 URI of the VM Management Inbound Port     
+	 * @param VMEM			URI of the VM Extended Management Inbound Port    
+	 * @param RequestSubmission  URI of the RequestSubmissionInboundPort of the VM
+	 * @throws Exception e
 	 */
 	public VMData(int nbCore, String VMUri,Map<String, Map<ProcessorPortTypes, String>> proc, String VMM, String VMEM,String RequestSubmission) throws Exception{
 		this.nbCore=nbCore;

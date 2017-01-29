@@ -3,10 +3,7 @@ package fr.upmc.datacenter.controller;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -17,31 +14,19 @@ import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
 import fr.upmc.datacenter.controller.ports.ControllerManagementInboundPort;
-import fr.upmc.datacenter.dispatcher.RequestDispatcher;
-import fr.upmc.datacenter.dispatcher.RequestDispatcherDynamicState;
 import fr.upmc.datacenter.dispatcher.connectors.RequestDispatcherManagementConnector;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherDynamicStateI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherSensorI;
 import fr.upmc.datacenter.dispatcher.interfaces.RequestDispatcherStaticStateI;
-import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataInboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.dispatcher.ports.RequestDispatcherManagementOutboundPort;
 import fr.upmc.datacenter.extension.vm.VMData;
-import fr.upmc.datacenter.extension.vm.connectors.VMExtendedManagementConnector;
-import fr.upmc.datacenter.extension.vm.ports.VMExtendedManagementOutboundPort;
-import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
-import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
-import fr.upmc.datacenter.hardware.processors.interfaces.ProcessorManagementI;
-import fr.upmc.datacenter.hardware.processors.ports.ProcessorIntrospectionOutboundPort;
-import fr.upmc.datacenter.hardware.processors.ports.ProcessorManagementOutboundPort;
 import fr.upmc.datacenter.interfaces.PushModeControllerI;
 import fr.upmc.datacenter.ring.RingDynamicState;
 import fr.upmc.datacenter.ring.interfaces.RingDataI;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataInboundPort;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataOutboundPort;
-import fr.upmc.datacenter.software.applicationvm.connectors.ApplicationVMManagementConnector;
-import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
 
 public class Controller extends AbstractComponent
 implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerManagementI{
@@ -51,31 +36,51 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	 *  components.															*/
 	protected final RequestDispatcherDynamicStateDataOutboundPort rddsdop;
 
+	/** URI of the controller*/
 	String controllerURI;
+	/** ID of the Controller*/
 	int controllerID;
-
+	
+	/** Uri of the Request Dispatcher linked to the controller*/
 	String requestDispatcherURI;
+	/** RequestDispatcherManagementOutboundPort of the request dispatcher linked to the controller*/
 	RequestDispatcherManagementOutboundPort rdmop;
 
+	/** ControllerManagementInboundPort of the controller */
 	ControllerManagementInboundPort cmip;
-
+	/** RingDynamicStateDataOutboundPort of the controller */
 	RingDynamicStateDataOutboundPort rdsdop;
+	/**RingDynamicStateDataInboundPort of the controller */
 	RingDynamicStateDataInboundPort rdsdip;
 
+	/** Uri of the next controller linked in the ring data */
 	String nextControllerUri;
+	/** Uri of the previous controller linked in the ring data*/
 	String previousControllerUri;
-
+	/** List of VMData reserved by the Controller */
 	List<VMData> vmReserved;
+	/** List of VMData that can circulate in the data ring*/
 	List<VMData> vmFree;
-
-	int idVM=1;
+	/** Object use to synchronized access to data*/
 	private Object o = new Object();
+	/** Number of core to be allocated*/
 	int waitingAllocation=0;
+	/** Number of core to be deallocated*/
 	int waitingDeallocation=0;
 
 	/** future of the task scheduled to push dynamic data.					*/
 	protected ScheduledFuture<?>			pushingFuture ;
 
+	/**
+	 *  Create a Controller
+	 * @param controllerURI uri of the controller
+	 * @param rddsdipURI Uri of the RequestDispatcherDynamicStateDataInboundPort
+	 * @param rdmipURI Uri of the RequestDispatcherManagementInboundPort
+	 * @param rdaipURI Uri of the RequestDispatcherActuatorInboundPort
+	 * @param controllerID ID of the controller
+	 * @param controllerManagementInboundPortUri Uri of the ControllerManagementInboundPort
+	 * @throws Exception e
+	 */
 	public Controller(String controllerURI,String rddsdipURI,String rdmipURI, String rdaipURI,int controllerID,String controllerManagementInboundPortUri) throws Exception{
 		super(1, 1) ;
 		this.controllerID=controllerID;
@@ -131,7 +136,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		long time = currentDynamicState.getAverageTime();
 		processControl(time,currentDynamicState.getNbreq(),currentDynamicState.getVMDatas());
 	}
-
+	/** Start adjusting the request dispatcher power with the data provided */
 	private void processControl(long time,int nbreq,ArrayList<VMData> vms) throws Exception {
 		this.logMessage("    /!\\ CONTROL : "+this.controllerURI+ " receiving average time :"+time+" with the last "+nbreq+" requests with "+vms.size()+" VM : "+getNumberOfCoreAllocated(vms)+" cores");
 		if(nbreq<30 || (nbreq<20 && time>20000))
@@ -362,7 +367,6 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 						}, interval, TimeUnit.MILLISECONDS) ;
 	}
 
-	/*TODO MODIFY*/
 	public void			sendDynamicState() throws Exception
 	{
 		if (this.rdsdip.connected()) {
@@ -414,48 +418,64 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		}
 	}
 
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#stopSending()
+	 */
 	@Override
 	public void stopSending() throws Exception {
 		stopPushing();
 	}
 
-
+	/** 
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#startSending()
+	 */
 	@Override
 	public void startSending() throws Exception {
 		startUnlimitedPushing(StaticData.RING_PUSH_INTERVAL);
 
 	}
 
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#getNextControllerUri()
+	 */
 	@Override
 	public String getNextControllerUri() {
 		return nextControllerUri;
 	}
 
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#setPreviousControllerUri(java.lang.String)
+	 */
 	@Override
 	public void setPreviousControllerUri(String controllerManagementUri) {
 		previousControllerUri=controllerManagementUri;
 	}
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#setNextControllerUri(java.lang.String)
+	 */
 	@Override
 	public void setNextControllerUri(String controllerManagementUri) {
 		nextControllerUri=controllerManagementUri;
 	}
 
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#getPreviousControllerUri()
+	 */
 	@Override
 	public String getPreviousControllerUri() {
 		return previousControllerUri;
 	}
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#getControllerRingDataInboundPortUri()
+	 */
 	@Override
 	public String getControllerRingDataInboundPortUri() throws Exception{
 		return this.rdsdip.getPortURI();
 	}
 
-
+	/**
+	 * @see fr.upmc.datacenter.controller.interfaces.ControllerManagementI#bindSendingDataUri(java.lang.String)
+	 */
 	@Override
 	public void bindSendingDataUri(String DataInboundPortUri) throws Exception {
 		if(rdsdop.connected())

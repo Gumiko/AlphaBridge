@@ -6,7 +6,14 @@ import fr.upmc.datacenter.hardware.computers.interfaces.ComputerStateDataConsume
 import fr.upmc.datacenter.ports.AbstractControlledDataOutboundPort;
 import fr.upmc.datacenter.ring.interfaces.RingDataI;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
-
+/**
+* The class <code>RingDynamicStateDataOutboundPort</code> implements the
+ * outbound port through which the component management methods are called.
+* 
+* <p>Created on : 2016-2017</p>
+* 
+* @author	Cédric Ribeiro et Mokrane Kadri
+*/
 public class RingDynamicStateDataOutboundPort extends AbstractControlledDataOutboundPort{
 	private static final long serialVersionUID = 1L;
 	protected String			ringURI ;

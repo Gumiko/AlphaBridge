@@ -2,7 +2,6 @@ package fr.upmc.datacenter.admissioncontroller.interfaces;
 
 import fr.upmc.components.interfaces.OfferedI;
 import fr.upmc.components.interfaces.RequiredI;
-import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
  * The interface <code>AdmissionControllerManagementI</code> defines the methods
  * to manage the Admission Controller.

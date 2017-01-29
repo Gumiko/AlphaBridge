@@ -1,29 +1,18 @@
 package fr.upmc.tests;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.upmc.components.AbstractComponent;
-import fr.upmc.components.connectors.DataConnector;
 import fr.upmc.components.cvm.AbstractCVM;
 import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.admissioncontroller.connectors.ApplicationRequestConnector;
 import fr.upmc.datacenter.admissioncontroller.connectors.AdmissionControllerManagementConnector;
-import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestInboundPort;
 import fr.upmc.datacenter.admissioncontroller.ports.ApplicationRequestOutboundPort;
 import fr.upmc.datacenter.admissioncontroller.ports.AdmissionControllerManagementOutboundPort;
-import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.hardware.computers.Computer;
-import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerDynamicStateDataOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerStaticStateDataOutboundPort;
-import fr.upmc.datacenter.hardware.tests.ComputerMonitor;
-import fr.upmc.datacenter.software.applicationvm.ports.ApplicationVMManagementOutboundPort;
 import fr.upmc.datacenter.software.connectors.RequestSubmissionConnector;
 import fr.upmc.datacenter.software.ports.RequestNotificationInboundPort;
 import fr.upmc.datacenter.software.ports.RequestNotificationOutboundPort;
@@ -134,8 +123,8 @@ public class TestGlobalRing extends AbstractCVM{
 			RequestGenerator rg1 =
 					new RequestGenerator(
 							"rg"+i,			// generator component URI
-							1000.0,			// mean time between two requests
-							2000000000L,	// mean number of instructions in requests
+							900.0,			// mean time between two requests
+							2500000000L,	// mean number of instructions in requests
 							RequestGeneratorManagementInboundPortURI+i,
 							RequestSubmissionOutboundPortURI+i,
 							RequestNotificationInboundPortURI+i) ;
@@ -186,7 +175,7 @@ public class TestGlobalRing extends AbstractCVM{
 				Thread.sleep(2000L);
 			}
 		}
-		Thread.sleep(90000L);
+		Thread.sleep(900000L);
 		for(int i=0;i<nbGenerator;i++){
 			rgmop.get(i).stopGeneration();
 		}
@@ -222,7 +211,7 @@ public class TestGlobalRing extends AbstractCVM{
 				}
 			}).start() ;
 			// Sleep to let the test scenario execute to completion.
-			Thread.sleep(350000L) ;
+			Thread.sleep(1000000L) ;
 			// Shut down the application.
 			System.out.println("shutting down...") ;
 			tc.shutdown() ;

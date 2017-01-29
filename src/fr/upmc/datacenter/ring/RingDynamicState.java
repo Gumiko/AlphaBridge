@@ -8,8 +8,7 @@ import fr.upmc.datacenter.extension.vm.VMData;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
 
 /**
- * @author Mokrane
- *
+ * @author	Cédric Ribeiro et Mokrane Kadri
  */
 public class RingDynamicState implements RingDynamicStateI{
 
@@ -29,7 +28,7 @@ public class RingDynamicState implements RingDynamicStateI{
 	}
 	
 	
-	/* 
+	/** 
 	 * @see fr.upmc.datacenter.interfaces.TimeStampingI#getTimeStamp()
 	 */
 	@Override
@@ -38,7 +37,7 @@ public class RingDynamicState implements RingDynamicStateI{
 	}
 
 	
-	/* 
+	/**
 	 * @see fr.upmc.datacenter.interfaces.TimeStampingI#getTimeStamperId()
 	 */
 	@Override
@@ -47,7 +46,7 @@ public class RingDynamicState implements RingDynamicStateI{
 	}
 
 	
-	/*
+	/**
 	 * @see fr.upmc.datacenter.ring.interfaces.RingDynamicStateI#getVMDataList()
 	 */
 	@Override
