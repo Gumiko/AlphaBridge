@@ -24,8 +24,8 @@ public class VirtualMachineExtended extends ApplicationVM implements VMExtendedM
 		this.addPort(vmemip);
 		vmemip.publishPort();
 		
-		this.toggleTracing();
-		this.toggleLogging();
+		//this.toggleTracing();
+		//this.toggleLogging();
 	}
 
 	public VMData getData() throws Exception{

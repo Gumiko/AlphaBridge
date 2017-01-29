@@ -19,17 +19,32 @@ implements	ControllerManagementI{
 	}
 
 	@Override
-	public String getNextControllerUri() {
+	public String getNextControllerUri() throws Exception {
 		return ((ControllerManagementI)this.offering).getNextControllerUri();
 	}
 
 	@Override
-	public String getPreviousControllerUri() {
+	public String getPreviousControllerUri() throws Exception {
 		return ((ControllerManagementI)this.offering).getPreviousControllerUri();
+	}
+	
+	@Override
+	public void setNextControllerUri(String controllerManagementUri) throws Exception {
+		 ((ControllerManagementI)this.offering).setNextControllerUri(controllerManagementUri);
+	}
+
+	@Override
+	public void setPreviousControllerUri(String controllerManagementUri) throws Exception {
+		 ((ControllerManagementI)this.offering).setPreviousControllerUri(controllerManagementUri);
 	}
 
 	@Override
 	public void bindSendingDataUri(String DataInboundPortUri) throws Exception {
 		((ControllerManagementI)this.offering).bindSendingDataUri(DataInboundPortUri);
+	}
+	
+	@Override
+	public String getControllerRingDataInboundPortUri() throws Exception{
+		return ((ControllerManagementI)this.offering).getControllerRingDataInboundPortUri();
 	}
 }

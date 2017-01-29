@@ -4,21 +4,22 @@ import fr.upmc.components.interfaces.OfferedI;
 import fr.upmc.components.interfaces.RequiredI;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 /**
- * The interface <code>ControllerManagementI</code>defines the methods
- * to manage the Controller.
+ * The interface <code>AdmissionControllerManagementI</code> defines the methods
+ * to manage the Admission Controller.
  *
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
- * @version	$Name$ -- $Revision$ -- $Date$
+ * @author	Cédric Ribeiro et Mokrane Kadri
  */
 public interface AdmissionControllerManagementI extends OfferedI,RequiredI{
 	/**
-	 * add a computer which the controller will use to create new vm
-	 * @param csopURI			ComputerServicesOutboundPort URI of the computer.
-	 * @param csipURI			ComputerServicesInboundPort URI of the computer
-	 * @throws Exception
+	 * Add a computer which the Admission Controller will use to create new vm
+	 * @param computerURI The Computer URI
+	 * @param ComputerStaticStateDataInboundPortURI			ComputerStaticStateDataInboundPortURI URI of the computer.
+	 * @param ComputerDynamicStateDataInboundPortURI	ComputerDynamicStateDataInboundPortURI URI of the computer.
+	 * @param ComputerServicesInboundPortURI			ComputerServicesInboundPort URI of the computer.
+	 * @throws Exception e
 	 */
 	public void linkComputer(String computerURI,String ComputerServicesInboundPortURI,String ComputerStaticStateDataInboundPortURI,
 			String ComputerDynamicStateDataInboundPortURI) throws Exception;

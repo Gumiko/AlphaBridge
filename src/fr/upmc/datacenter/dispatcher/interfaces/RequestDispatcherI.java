@@ -12,22 +12,15 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
+ * @author	Cédric Ribeiro et Mokrane Kadri
  * @version	$Name$ -- $Revision$ -- $Date$
  */
 public interface RequestDispatcherI extends OfferedI,RequiredI{
 	/**
-	 * Link the Request generator to the Request Dispatcher
-	 * @param c_out			ComputerServicesOutboundPort of the computer.
-	 * @throws Exception
+	 * Link The request Generator to the request Dispatcher
+	 * @param requestGeneratorRequestNotificationInboundPort RequestNotificationInboundPortURI of the Request Generator
+	 * @throws Exception e
 	 */
 	public void linkRequestGenerator(String requestGeneratorRequestNotificationInboundPort) throws Exception;
-	/**
-	 * Link a Vm to the request Dispatcher
-	 * @param id			id of the VM.
-	 * @param vm			the vm.
-	 * @param vm_rsip		vm request submission inbound port uri.
-	 * @param vm_rnop		vm request notification outbound port uri.
-	 * @throws Exception
-	 */
+
 }

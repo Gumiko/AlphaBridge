@@ -11,8 +11,7 @@ import fr.upmc.datacenter.software.ports.RequestSubmissionOutboundPort;
  * <p><strong>Description</strong></p>
  * 
  * 
- * @author	<a href="#">Cï¿½dric Ribeiro & Mokrane Kadri</a>
- * @version	$Name$ -- $Revision$ -- $Date$
+ * @author	Cédric Ribeiro et Mokrane Kadri
  */
 @SuppressWarnings("unused")
 public class ApplicationRequestConnector

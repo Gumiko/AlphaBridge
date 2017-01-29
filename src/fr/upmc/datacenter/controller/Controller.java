@@ -15,6 +15,7 @@ import fr.upmc.data.StaticData;
 import fr.upmc.datacenter.admissioncontroller.AdmissionController;
 import fr.upmc.datacenter.connectors.ControlledDataConnector;
 import fr.upmc.datacenter.controller.interfaces.ControllerManagementI;
+import fr.upmc.datacenter.controller.ports.ControllerManagementInboundPort;
 import fr.upmc.datacenter.dispatcher.RequestDispatcher;
 import fr.upmc.datacenter.dispatcher.RequestDispatcherDynamicState;
 import fr.upmc.datacenter.dispatcher.connectors.RequestDispatcherActuatorConnector;
@@ -56,6 +57,8 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 
 	String controllerURI;
 	int controllerID;
+
+
 	String requestDispatcherURI;
 	RequestDispatcherManagementOutboundPort rdmop;
 	RequestDispatcherActuatorOutboundPort rdaop;
@@ -63,8 +66,13 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	Map<Integer,ApplicationVMManagementOutboundPort> mapVMManagement;
 	Map<Integer,VMExtendedManagementOutboundPort> mapVMEManagement;
 
+	ControllerManagementInboundPort cmip;
+
 	RingDynamicStateDataOutboundPort rdsdop;
 	RingDynamicStateDataInboundPort rdsdip;
+
+	String nextControllerUri;
+	String previousControllerUri;
 
 	List<AllocatedCore> acReserved;
 	List<AllocatedCore> acFree;
@@ -73,22 +81,27 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	List<VMData> vmFree;
 
 	int idVM=1;
-
+	private Object o = new Object();
 	int waitingAllocation=0;
 	int waitingDisallocation=0;
 
 	/** future of the task scheduled to push dynamic data.					*/
 	protected ScheduledFuture<?>			pushingFuture ;
 
-	public Controller(String controllerURI,String rddsdipURI,String rdmipURI, String rdaipURI,int controllerID) throws Exception{
+	public Controller(String controllerURI,String rddsdipURI,String rdmipURI, String rdaipURI,int controllerID,String controllerManagementInboundPortUri) throws Exception{
 		super(1, 1) ;
 		this.controllerID=controllerID;
+
+		cmip=new ControllerManagementInboundPort(controllerManagementInboundPortUri,this);
+		this.addPort(cmip);
+		cmip.publishPort();
+
 		mapVMManagement=new HashMap<Integer,ApplicationVMManagementOutboundPort>();
 		mapVMEManagement=new HashMap<Integer,VMExtendedManagementOutboundPort>();
 
 		vmReserved = new ArrayList<VMData>();
 		vmFree = new ArrayList<VMData>();
-		
+
 		acReserved = new ArrayList<AllocatedCore>();
 		acFree=new ArrayList<AllocatedCore>();
 
@@ -104,7 +117,7 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		rdaop.publishPort();
 		rdaop.doConnection(rdaipURI, RequestDispatcherActuatorConnector.class.getCanonicalName());
 
-		
+
 		rddsdop=new RequestDispatcherDynamicStateDataOutboundPort(this,controllerURI);
 		this.addPort(rddsdop);
 		rddsdop.publishPort();
@@ -113,14 +126,16 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 		/*Dynamic data sending to the controller */
 
 		rdsdop = new RingDynamicStateDataOutboundPort(this,controllerURI);
+		this.addPort(rdsdop);
+		this.rdsdop.publishPort();
 
 		rdsdip=new RingDynamicStateDataInboundPort(AdmissionController.C_DSDIP_PREFIX+controllerID, this);
 		this.addPort(rdsdip) ;
 		this.rdsdip.publishPort();
-		
+
 		this.toggleLogging();
 		this.toggleTracing();
-		
+
 	}
 
 
@@ -222,18 +237,22 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 	@Override
 	public void acceptRingDynamicData(String requestDispatcherURI, RingDynamicStateI currentDynamicState)
 			throws Exception {
+		synchronized(o){
+			this.logMessage("[----DATA----]"+this.controllerURI+ " RECEIVE " +currentDynamicState.getVMDataList().size()+ " FREE VM");
+			
+			vmFree.addAll(currentDynamicState.getVMDataList());
+			this.logMessage("[----DATA----]"+this.controllerURI+ " FREE["+vmFree.size()+"] | RESERVED["+vmReserved.size()+"]");
+			if(waitingAllocation>0){
 
-		if(waitingAllocation>0){
-
+			}
+			/*TODO*/
+			/*
+			 * 
+			 * 
+			 * currentDynamicState.getVMDatas();
+			 * 
+			 */
 		}
-		/*TODO*/
-		/*
-		 * 
-		 * 
-		 * currentDynamicState.getVMDatas();
-		 * 
-		 */
-
 	}
 
 
@@ -324,10 +343,12 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 
 
 	public RingDynamicState getDynamicState() throws UnknownHostException {
-		ArrayList<VMData> copy=new ArrayList<>();
-		RingDynamicState rds=new RingDynamicState(copy);
-		vmFree.clear();
-		return rds;
+		synchronized(o){
+			ArrayList<VMData> copy=new ArrayList<>(vmFree);
+			RingDynamicState rds=new RingDynamicState(copy);
+			vmFree.clear();
+			return rds;
+		}
 	}
 
 
@@ -346,13 +367,29 @@ implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerMana
 
 	@Override
 	public String getNextControllerUri() {
-		return null;
+		return nextControllerUri;
+	}
+
+
+	@Override
+	public void setPreviousControllerUri(String controllerManagementUri) {
+		previousControllerUri=controllerManagementUri;
+	}
+
+	@Override
+	public void setNextControllerUri(String controllerManagementUri) {
+		nextControllerUri=controllerManagementUri;
 	}
 
 
 	@Override
 	public String getPreviousControllerUri() {
-		return null;
+		return previousControllerUri;
+	}
+
+	@Override
+	public String getControllerRingDataInboundPortUri() throws Exception{
+		return this.rdsdip.getPortURI();
 	}
 
 
