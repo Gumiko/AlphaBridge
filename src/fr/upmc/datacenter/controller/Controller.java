@@ -27,7 +27,19 @@ import fr.upmc.datacenter.ring.interfaces.RingDataI;
 import fr.upmc.datacenter.ring.interfaces.RingDynamicStateI;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataInboundPort;
 import fr.upmc.datacenter.ring.ports.RingDynamicStateDataOutboundPort;
-
+/**
+ * The class <code>Controller</code> implements a component that represents an
+ * Controller of a Dispatcher in a datacenter.
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ * The Controller receive periodically Data from the Request Dispatcher linked to him.
+ * It decide to adjust the number of cores or Virtual Machine associated to the Request Dispatcher
+ * to avoid wasting power or not having enough for the application to work properly
+ * 
+ * 
+ * @author	Cédric Ribeiro et Mokrane Kadri
+ */
 public class Controller extends AbstractComponent
 implements RequestDispatcherSensorI,RingDataI,PushModeControllerI,ControllerManagementI{
 

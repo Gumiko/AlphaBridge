@@ -12,10 +12,19 @@ import fr.upmc.datacenter.hardware.computers.Computer.AllocatedCore;
 import fr.upmc.datacenter.hardware.computers.connectors.ComputerServicesConnector;
 import fr.upmc.datacenter.hardware.computers.ports.ComputerServicesOutboundPort;
 import fr.upmc.datacenter.hardware.processors.Processor.ProcessorPortTypes;
-import fr.upmc.datacenter.hardware.processors.ports.ProcessorServicesOutboundPort;
 import fr.upmc.datacenter.software.applicationvm.ApplicationVM;
 import fr.upmc.datacenter.software.connectors.RequestNotificationConnector;
-
+/**
+ * The class <code>VirtualMachineExtended</code> implements a component that represents an
+ * Virtual Machine in a datacenter.
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ *  It Extend the Actual Virtual Machine to offer more Services like adding cores or removing cores directly
+ *  by the VM.
+ * 
+ * @author	Cédric Ribeiro et Mokrane Kadri
+ */
 public class VirtualMachineExtended extends ApplicationVM implements VMExtendedManagementI{
 	/** VMExtendedManagementInboundPort of the Extended Virtual Machine */
 	protected VMExtendedManagementInboundPort vmemip;
